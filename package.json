@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "deployed": "node run.mjs deployed",
-    "patched": "node run.mjs patched"
+    "patched": "node run.mjs patched",
+    "report": "node make-report.mjs report-deployed.json && node make-report.mjs report-patched.json"
   },
   "dependencies": { "viem": "^2.21.0" }
 }

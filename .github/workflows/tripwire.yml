@@ -1,0 +1,29 @@
+name: tripwire
+on: [push, pull_request]
+jobs:
+  conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: foundry-rs/foundry-toolchain@v1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm ci || npm install
+      - run: forge build
+      - name: Start local chain
+        run: |
+          nohup anvil > anvil.log 2>&1 &
+          sleep 4
+      - name: Attack the token (fails the build on any breach)
+        run: node run.mjs patched rules.json
+      - name: Build the shareable report
+        if: always()
+        run: node make-report.mjs report-patched.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tripwire-report
+          path: |
+            report-patched.json
+            report-patched.html
