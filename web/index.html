@@ -4,34 +4,36 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tripwire: do the legal terms match the code?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500..700;1,9..144,500..700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#eef1f5;--sf:#fff;--ink:#142033;--mu:#5b6677;--ln:#d5dbe4;--br:#d92d20;--brb:#fdeceb;--hd:#0f8a73;--hdb:#e0f3ee;color-scheme:light;box-sizing:border-box}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d131c;--sf:#151d29;--ink:#e8edf4;--mu:#93a0b3;--ln:#27313f;--br:#ff6b5e;--brb:#3a1a17;--hd:#3fd1b0;--hdb:#12302b;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0d131c;--sf:#151d29;--ink:#e8edf4;--mu:#93a0b3;--ln:#27313f;--br:#ff6b5e;--brb:#3a1a17;--hd:#3fd1b0;--hdb:#12302b;color-scheme:dark}
-html{scroll-behavior:smooth;scroll-padding-top:12px}
+:root{--bg:#0a101b;--pn:#0d1626;--ln:#1e2a3f;--tx:#ece6d4;--mu:#8d9ab0;--rd:#ff6b5e;--tl:#3fd1b0;--pp:#efe7d3;--pi:#1c1810;--pm:#6e6650;--pr:#c8372a;--pt:#0b7a64;color-scheme:dark;box-sizing:border-box}
 *,*:before,*:after{box-sizing:inherit}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+html{scroll-behavior:smooth;scroll-padding-top:12px;background:var(--bg)}
+body{margin:0;color:var(--tx);font:17px/1.55 "Fraunces","Iowan Old Style",Georgia,serif;background:var(--bg) radial-gradient(#16233a 1px,transparent 1.2px) 0 0/24px 24px;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.mono,.k,.stamp,small,pre,.sl,.btn,.nv a,.ch,.tick span{font-family:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace}
 .w{max-width:1180px;margin:0 auto;padding:0 24px}
-.serif,h1,h2,.big{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
-button{font:inherit;cursor:pointer}
-a:focus-visible,button:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--hd);outline-offset:3px}
-.btn{display:inline-block;text-decoration:none;border:1px solid var(--ink);background:var(--ink);color:var(--bg);font-weight:700;padding:14px 24px;border-radius:999px;font-size:17px}
-.btn.alt{background:transparent;color:var(--ink);border-color:var(--ln);font-size:15px;padding:12px 20px;font-weight:600}
+a{color:inherit}button{font:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--tl);outline-offset:3px}
+.btn{display:inline-block;text-decoration:none;border:1px solid var(--tx);background:var(--tx);color:var(--bg);font-weight:600;font-size:15px;letter-spacing:.03em;padding:14px 22px;border-radius:3px}
+.btn.alt{background:transparent;color:var(--tx);border-color:#3a4a66;font-size:14px;padding:12px 18px}
 .btn:disabled{opacity:.45;cursor:default}
-.hero{background:#0a101b;color:#e8edf4;padding-top:env(safe-area-inset-top,0px)}
-.nv{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
-.nv b{font-size:19px}.nv a{color:#b9c4d6;text-decoration:none;margin-left:22px;font-size:15px}.nv a:hover{color:#fff}
-.hg{display:grid;gap:26px;align-items:center;padding:12px 0 52px}
-@media (min-width:900px){.hg{grid-template-columns:1.02fr 1fr;min-height:min(76vh,620px)}}
-.hero h1{font-size:clamp(36px,5.2vw,64px);line-height:1.03;margin:0 0 18px;letter-spacing:-.015em}
-.hero .lead{color:#b9c4d6;font-size:19px;max-width:48ch;margin:0 0 26px}
-.hero .btn{background:#e8edf4;color:#0a101b;border-color:#e8edf4}
-.hero .btn.alt{background:transparent;color:#e8edf4;border-color:#3a4658}
 .row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
-.proof{color:#93a0b3;font-size:15px;margin:24px 0 0;max-width:46ch}
-.art{position:relative;border-radius:14px;overflow:hidden;background:#0d1626}
-.art svg{display:block;width:100%;height:auto}
-.vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.nv{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--ln)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;font-size:21px}.logo svg{width:34px;height:34px;color:var(--tx)}
+.nv a{color:var(--mu);text-decoration:none;margin-left:22px;font-size:13px;letter-spacing:.06em}.nv a:hover{color:var(--tx)}
+.hg{display:grid;gap:34px;align-items:center;padding:44px 0 60px}
+@media (min-width:900px){.hg{grid-template-columns:1fr 1.02fr;min-height:min(74vh,600px)}}
+.k{color:var(--mu);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;margin:0}
+h1{font-size:clamp(38px,5.4vw,70px);line-height:1;font-weight:600;margin:16px 0 20px;letter-spacing:-.02em}
+h1 em{color:var(--rd);font-weight:500}
+.lead{color:#b9c0cf;font-size:19px;max-width:46ch;margin:0 0 28px}
+.proof{color:var(--mu);font-size:15px;margin:26px 0 0;max-width:46ch}
+.art{position:relative;border:1px solid var(--ln);background:var(--pn);border-radius:6px}
+.art svg.sc{display:block;width:100%;height:auto;border-radius:6px}
+.vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s;border-radius:6px}
+.art .seal{position:absolute;left:-16px;bottom:-18px;width:108px;height:108px;background:var(--bg);border-radius:50%;color:var(--tx)}
+.hs{position:absolute;top:18px;right:18px;animation-delay:1.1s}
 .pr{animation:run 4.2s linear infinite;opacity:0}.pt{animation:thru 4.2s linear infinite;opacity:0}
 @keyframes run{0%{transform:translateX(0);opacity:0}6%{opacity:1}80%{transform:translateX(470px);opacity:1}100%{transform:translateX(470px);opacity:0}}
 @keyframes thru{0%{transform:translateX(0);opacity:0}6%{opacity:1}85%{transform:translateX(535px);opacity:1}100%{transform:translateX(560px);opacity:0}}
@@ -39,79 +41,99 @@ a:focus-visible,button:focus-visible,textarea:focus-visible,summary:focus-visibl
 @keyframes sp{50%{opacity:.25;transform:scale(1.7)}}
 .bl{animation:bl 1.6s steps(2,jump-none) infinite}@keyframes bl{50%{opacity:.35}}
 .tl{animation:gl 3s ease-in-out infinite}@keyframes gl{50%{opacity:.6}}
-@media (prefers-reduced-motion:reduce){.art svg *{animation:none!important}.pr,.pt{opacity:1;transform:translateX(250px)}html{scroll-behavior:auto}}
-.sec{padding-top:64px}
-h2{font-size:clamp(26px,3.4vw,36px);line-height:1.1;margin:0 0 6px;letter-spacing:-.01em}
-.sub{color:var(--mu);margin:0 0 4px;max-width:60ch}
-.st{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:0;counter-reset:s}
-@media (min-width:820px){.st,.au{grid-template-columns:repeat(3,1fr);gap:28px}}
-.st li{counter-increment:s;padding:16px 0 20px;border-top:2px solid var(--ink)}
-.st li:before{content:counter(s);display:block;font:700 30px/1 Georgia,serif;margin-bottom:10px}
-.st b,.au b{display:block;font-size:18px;margin-bottom:4px}
-.st span,.au span{color:var(--mu)}
-.au{display:grid;gap:0;margin-top:20px}
-.au div{padding:16px 0 18px;border-top:1px solid var(--ln)}
-.demo{display:grid;gap:26px;margin-top:22px}
-@media (min-width:980px){.demo{grid-template-columns:1.05fr 1fr;align-items:start}}
-.gate{margin-top:16px;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:6px 18px}
-.gh{display:flex;justify-content:space-between;gap:10px;padding:12px 0 8px;color:var(--mu);font-size:14px}
-.lane{display:grid;grid-template-columns:170px 1fr 92px;gap:14px;align-items:center;padding:16px 0;border-top:1px solid var(--ln)}
-.lh b{display:block}.lh span{color:var(--mu);font-size:14px}
+.tick{border-block:1px solid var(--ln);overflow:hidden;white-space:nowrap;background:#080d17}
+.tr{display:inline-block;animation:mq 46s linear infinite}
+.tick span{display:inline-block;background:var(--pr);color:#fff;font-weight:600;font-size:12.5px;letter-spacing:.14em;padding:13px 16px;text-transform:uppercase}
+.tick b{display:inline-block;font-weight:500;color:#cfd6e4;padding:0 34px 0 18px;font-size:15px}
+@keyframes mq{to{transform:translateX(-50%)}}
+.stamp{display:inline-block;font-weight:600;font-size:14px;line-height:1;letter-spacing:.12em;padding:7px 11px;border:2px solid currentColor;border-radius:3px;text-transform:uppercase;transform:rotate(-6deg);animation:sti .4s cubic-bezier(.2,1.5,.4,1) backwards;white-space:nowrap}
+.stamp.big{font-size:19px;padding:9px 14px}
+.stamp.b{color:var(--rd)}.stamp.h{color:var(--tl)}
+.paper .stamp.b{color:var(--pr)}.paper .stamp.h{color:var(--pt)}
+@keyframes sti{0%{transform:rotate(-6deg) scale(2.4);opacity:0}100%{transform:rotate(-6deg) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){*,.art svg *{animation:none!important}.pr,.pt{opacity:1;transform:translateX(250px)}html{scroll-behavior:auto}}
+.sec{padding-top:76px}
+h2{font-size:clamp(28px,3.6vw,42px);line-height:1.05;font-weight:600;margin:10px 0 10px;letter-spacing:-.015em}
+.sub{color:#b9c0cf;max-width:58ch;margin:0}
+.st{list-style:none;margin:28px 0 0;padding:0;display:grid;counter-reset:s}
+@media (min-width:820px){.st,.au{grid-template-columns:repeat(3,1fr);gap:30px}}
+.st li{counter-increment:s;padding:18px 0 22px;border-top:1px solid var(--tx)}
+.st li:before{content:"0" counter(s);display:block;font:italic 600 42px/1 "Fraunces",serif;color:var(--rd);margin-bottom:10px}
+.st b,.au b{display:block;font-size:20px;margin-bottom:4px}.st span,.au span{color:#b9c0cf}
+.au{display:grid;margin-top:22px}.au div{padding:18px 0 20px;border-top:1px solid var(--ln)}
+.demo{display:grid;gap:34px;margin-top:28px}
+@media (min-width:980px){.demo{grid-template-columns:1fr 1.02fr;align-items:start}}
+.chamber{background:var(--pn);border:1px solid var(--ln);border-radius:6px;padding:4px 22px 22px}
+.ch{display:flex;justify-content:space-between;gap:10px;padding:14px 0 12px;color:var(--mu);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase}
+.lane{display:grid;grid-template-columns:150px 1fr;gap:14px;align-items:center;padding:16px 0;border-top:1px solid var(--ln)}
+@media (max-width:560px){.lane{grid-template-columns:1fr}}
+.lh b{display:block;font-weight:600}.lh span{color:var(--mu);font-size:14px}
 .trk{position:relative;height:30px}
-.beam{position:absolute;left:0;right:12px;top:13px;height:4px;border-radius:2px;background:var(--ln);transition:background .3s}
-.post{position:absolute;right:0;top:0;width:12px;height:30px;border-radius:3px;background:var(--ink)}
+.beam{position:absolute;left:0;right:12px;top:13px;height:4px;border-radius:2px;background:#26354f;transition:background .3s}
+.post{position:absolute;right:0;top:0;width:12px;height:30px;border-radius:2px;background:var(--tx)}
 .dot{position:absolute;left:0;top:7px;width:16px;height:16px;border-radius:50%;background:var(--mu);transition:left .9s cubic-bezier(.45,0,.75,.55),background .3s,opacity .4s}
 .lane.go .dot{left:calc(100% - 32px)}
-.lane.ok .beam,.lane.ok .dot{background:var(--hd)}
-.lane.bad .beam{background:linear-gradient(90deg,var(--br) 0 76%,transparent 76% 90%,var(--br) 90%)}
-.lane.bad .post{background:var(--br);animation:fl .6s}
-.lane.bad .dot{left:calc(100% - 4px);background:var(--br);opacity:0;transition:left .3s ease-in,opacity .5s .15s}
-@keyframes fl{0%{box-shadow:0 0 0 0 var(--br)}100%{box-shadow:0 0 0 16px transparent}}
-.rs{text-align:right;font-weight:700;color:var(--mu);font-size:15px}.rs.h{color:var(--hd)}.rs.b{color:var(--br)}
-@media (max-width:580px){.lane{grid-template-columns:1fr 92px}.lane .trk{grid-column:1/-1;order:3}}
-.big{font-size:clamp(26px,3.4vw,34px);line-height:1.1;margin:0;font-weight:700}
-.sm{color:var(--mu);margin:6px 0 14px}
-.ph{border:1px dashed var(--ln);border-radius:12px;padding:22px;color:var(--mu);margin:0}
-.cc{display:grid;border:1px solid var(--ln);border-radius:12px;overflow:hidden;margin-top:14px;background:var(--sf)}
-.cc>div{padding:16px}.cc>div+div{border-top:1px solid var(--ln)}
-.cc small{display:block;color:var(--mu);margin-bottom:8px;font-weight:600}
-.cc q{quotes:none;display:block;font:italic 17px/1.55 Georgia,serif}
-pre{margin:0;font:13.5px/1.6 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;background:var(--brb);padding:12px;border-radius:8px}
-pre b{color:var(--br)}
-.why{margin:10px 0 0;color:var(--mu);font-size:14px}
+.lane.ok .beam,.lane.ok .dot{background:var(--tl)}
+.lane.bad .beam{background:linear-gradient(90deg,var(--rd) 0 76%,transparent 76% 90%,var(--rd) 90%)}
+.lane.bad .post{background:var(--rd);animation:fl .6s}
+.lane.bad .dot{left:calc(100% - 4px);background:var(--rd);opacity:0;transition:left .3s ease-in,opacity .5s .15s}
+@keyframes fl{0%{box-shadow:0 0 0 0 var(--rd)}100%{box-shadow:0 0 0 16px transparent}}
+.chamber .row{margin-top:18px}
 details{margin-top:22px;border-top:1px solid var(--ln);padding-top:14px}
-summary{cursor:pointer;font-weight:700}
-.doc{width:100%;min-height:190px;margin-top:12px;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-left:4px solid var(--ink);border-radius:4px 10px 10px 4px;padding:14px;font:16px/1.6 Georgia,serif}
-.fine{color:var(--mu);font-size:13.5px;margin:0;padding:40px 0 calc(40px + env(safe-area-inset-bottom,0px));max-width:90ch}
-.fine a{color:inherit}
+summary{cursor:pointer;font-weight:600}
+.doc{width:100%;min-height:170px;margin-top:12px;background:var(--bg);color:var(--tx);border:1px solid var(--ln);border-radius:4px;padding:14px;font:16px/1.6 "Fraunces",Georgia,serif}
+.sm{color:var(--mu);font-size:14px;margin:10px 0 0}
+.paper{background:var(--pp);color:var(--pi);border-radius:3px;padding:24px 26px 26px;box-shadow:0 18px 50px rgba(0,0,0,.5)}
+@media (min-width:980px){.paper{transform:rotate(-.7deg)}}
+.ph2{display:flex;justify-content:space-between;gap:10px;border-bottom:2px solid var(--pi);padding-bottom:10px;font:600 13px "IBM Plex Mono",monospace;letter-spacing:.14em;text-transform:uppercase}
+.spec{margin:12px 0 4px;color:var(--pm);font:13.5px "IBM Plex Mono",monospace}.spec b{color:var(--pi);font-weight:600}
+.paper ol{list-style:none;margin:8px 0 0;padding:0}
+.paper li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px dashed #b9ae92;min-height:68px}
+.t{font-weight:600;font-size:18px}.t small{display:block;color:var(--pm);font-weight:400;font-size:12.5px}
+.sl{color:#a79d83;font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
+.vd{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:18px;padding:16px;border:2px solid var(--pi)}
+.vd small{display:block;color:var(--pm);letter-spacing:.1em;text-transform:uppercase;font-size:12px}.vd b{font-size:24px;line-height:1.1}
+.fd{margin-top:16px;padding-top:14px;border-top:1px solid #b9ae92}
+.fd small{color:var(--pm);letter-spacing:.1em;text-transform:uppercase;font-size:12px}
+.fd q{display:block;quotes:none;font:italic 500 17px/1.5 "Fraunces",Georgia,serif;margin:6px 0 10px}
+.paper pre{margin:0;background:var(--pi);color:var(--pp);font-size:13px;line-height:1.6;white-space:pre-wrap;word-break:break-word;padding:12px;border-radius:3px}
+.paper pre b{color:#ff8a7c;font-weight:600}
+.why,.mu{color:var(--pm);font-size:14px;margin:8px 0 0}
+.paper .row{margin-top:18px}
+.paper .btn{background:var(--pi);color:var(--pp);border-color:var(--pi)}.paper .btn.alt{background:transparent;color:var(--pi);border-color:#8a8066}
+.ft{display:flex;gap:18px;align-items:flex-start;padding:70px 24px calc(44px + env(safe-area-inset-bottom,0px))}
+.ft svg{flex:none;width:64px;height:64px;color:var(--mu)}
+.fine{color:var(--mu);font-size:13.5px;margin:0;max-width:90ch}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
-<header class="hero"><div class="w">
-<nav class="nv"><b>Tripwire</b><span><a href="#how">How it works</a><a href="#demo">Try it</a><a href="https://github.com/BenCoy09/tripwire" target="_blank" rel="noopener">GitHub</a></span></nav>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="seal" viewBox="0 0 120 120"><circle cx="60" cy="60" r="57" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="60" cy="60" r="36" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="2 3"/><path id="rc" d="M60 60 m-47 0 a47 47 0 1 1 94 0 a47 47 0 1 1 -94 0" fill="none"/><text font-size="9" font-weight="600" letter-spacing="2" fill="currentColor" font-family="monospace"><textPath href="#rc" textLength="290" lengthAdjust="spacing">TRIPWIRE • TESTED TO THE TERMS • TRIPWIRE •</textPath></text><rect x="42" y="44" width="5" height="32" rx="1.5" fill="currentColor"/><rect x="73" y="44" width="5" height="32" rx="1.5" fill="currentColor"/><line x1="47" y1="60" x2="55" y2="60" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><line x1="65" y1="60" x2="73" y2="60" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="60" cy="60" r="2.8" fill="#ff6b5e"/></symbol></svg>
+<header class="w">
+<nav class="nv"><span class="logo"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#seal"/></svg>Tripwire</span><span><a href="#how">How it works</a><a href="#demo">The test</a></span></nav>
 <div class="hg">
 <div>
-<h1>The legal terms say one thing. The code does another.</h1>
+<p class="k">Test report No. 0001 · Specimen: Aurelia Real Estate Token</p>
+<h1>The legal terms say one thing. <em>The code does another.</em></h1>
 <p class="lead">Tripwire reads the legal terms behind a tokenized asset, then attacks the token to find out which promises the code actually keeps.</p>
-<div class="row"><a class="btn" id="go" href="#demo">See it break a token</a><a class="btn alt" href="https://github.com/BenCoy09/tripwire" target="_blank" rel="noopener">View the code</a></div>
+<div class="row"><a class="btn" id="go" href="#demo">See it break a token</a><a class="btn alt" href="#how">How it works</a></div>
 <p class="proof">Run on a real EVM chain: the deployed token held 1 of 4 promises. The fixed token held 4 of 4.</p>
 </div>
-<div class="art"><svg viewBox="0 0 600 520" role="img" aria-label="A tokenized building behind four laser beams. Three are cut, one holds."><defs><pattern id="w" width="14" height="18" patternUnits="userSpaceOnUse"><rect x="3" y="4" width="6" height="8" rx="1" fill="#9fb4d3" opacity=".28"/></pattern></defs><rect x="40" y="170" width="110" height="330" fill="#111b2c"/><rect x="40" y="170" width="110" height="330" fill="url(#w)"/><rect x="160" y="250" width="95" height="250" fill="#15233a"/><rect x="160" y="250" width="95" height="250" fill="url(#w)"/><rect x="265" y="90" width="100" height="410" fill="#0f1a2b"/><rect x="265" y="90" width="100" height="410" fill="url(#w)"/><rect x="375" y="210" width="120" height="290" fill="#15233a"/><rect x="375" y="210" width="120" height="290" fill="url(#w)"/><rect x="505" y="300" width="60" height="200" fill="#111b2c"/><rect x="505" y="300" width="60" height="200" fill="url(#w)"/><rect x="283" y="120" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="311" y="156" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="339" y="120" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="283" y="264" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="325" y="300" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="397" y="240" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="425" y="276" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="185" y="300" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="60" y="230" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="88" y="330" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="520" y="350" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><line x1="0" y1="500" x2="600" y2="500" stroke="#223049"/><text x="24" y="128" font-size="12.5" fill="#b9c4d6">Accredited investors only</text><line x1="18" y1="140" x2="360" y2="140" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="400" y1="140" x2="520" y2="140" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="380" cy="140" r="7" fill="#ff6b5e" style="animation-delay:0.0s"/><text class="bl" x="358" y="164" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="140" r="6" fill="#ff6b5e" style="animation-delay:0.0s"/><rect x="522" y="116" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="203" font-size="12.5" fill="#b9c4d6">Lock-up</text><line x1="18" y1="215" x2="400" y2="215" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="440" y1="215" x2="520" y2="215" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="420" cy="215" r="7" fill="#ff6b5e" style="animation-delay:0.3s"/><text class="bl" x="398" y="239" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="215" r="6" fill="#ff6b5e" style="animation-delay:0.7s"/><rect x="522" y="191" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="278" font-size="12.5" fill="#b9c4d6">Holder cap</text><line x1="18" y1="290" x2="380" y2="290" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="420" y1="290" x2="520" y2="290" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="400" cy="290" r="7" fill="#ff6b5e" style="animation-delay:0.6s"/><text class="bl" x="378" y="314" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="290" r="6" fill="#ff6b5e" style="animation-delay:1.4s"/><rect x="522" y="266" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="353" font-size="12.5" fill="#b9c4d6">Blocked countries</text><line class="tl" x1="18" y1="365" x2="520" y2="365" stroke="#3fd1b0" stroke-width="3" stroke-linecap="round"/><text x="440" y="389" font-size="10.5" font-weight="700" fill="#3fd1b0">HELD</text><circle class="pr" cx="34" cy="365" r="6" fill="#3fd1b0" style="animation-delay:2.0999999999999996s"/><rect x="522" y="341" width="10" height="48" rx="3" fill="#e8edf4"/></svg><video class="vid" id="hv" src="hero.mp4" autoplay muted loop playsinline preload="metadata"></video></div>
+<div class="art"><svg class="sc" viewBox="0 0 600 520" role="img" aria-label="A tokenized building behind four laser beams. Three are cut, one holds."><defs><pattern id="w" width="14" height="18" patternUnits="userSpaceOnUse"><rect x="3" y="4" width="6" height="8" rx="1" fill="#9fb4d3" opacity=".28"/></pattern></defs><rect x="40" y="170" width="110" height="330" fill="#111b2c"/><rect x="40" y="170" width="110" height="330" fill="url(#w)"/><rect x="160" y="250" width="95" height="250" fill="#15233a"/><rect x="160" y="250" width="95" height="250" fill="url(#w)"/><rect x="265" y="90" width="100" height="410" fill="#0f1a2b"/><rect x="265" y="90" width="100" height="410" fill="url(#w)"/><rect x="375" y="210" width="120" height="290" fill="#15233a"/><rect x="375" y="210" width="120" height="290" fill="url(#w)"/><rect x="505" y="300" width="60" height="200" fill="#111b2c"/><rect x="505" y="300" width="60" height="200" fill="url(#w)"/><rect x="283" y="120" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="311" y="156" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="339" y="120" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="283" y="264" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="325" y="300" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="397" y="240" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="425" y="276" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="185" y="300" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="60" y="230" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="88" y="330" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="520" y="350" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><line x1="0" y1="500" x2="600" y2="500" stroke="#223049"/><text x="24" y="128" font-size="12.5" fill="#b9c4d6">Accredited investors only</text><line x1="18" y1="140" x2="360" y2="140" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="400" y1="140" x2="520" y2="140" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="380" cy="140" r="7" fill="#ff6b5e" style="animation-delay:0.0s"/><text class="bl" x="358" y="164" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="140" r="6" fill="#ff6b5e" style="animation-delay:0.0s"/><rect x="522" y="116" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="203" font-size="12.5" fill="#b9c4d6">Lock-up</text><line x1="18" y1="215" x2="400" y2="215" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="440" y1="215" x2="520" y2="215" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="420" cy="215" r="7" fill="#ff6b5e" style="animation-delay:0.3s"/><text class="bl" x="398" y="239" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="215" r="6" fill="#ff6b5e" style="animation-delay:0.7s"/><rect x="522" y="191" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="278" font-size="12.5" fill="#b9c4d6">Holder cap</text><line x1="18" y1="290" x2="380" y2="290" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="420" y1="290" x2="520" y2="290" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="400" cy="290" r="7" fill="#ff6b5e" style="animation-delay:0.6s"/><text class="bl" x="378" y="314" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="290" r="6" fill="#ff6b5e" style="animation-delay:1.4s"/><rect x="522" y="266" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="353" font-size="12.5" fill="#b9c4d6">Blocked countries</text><line class="tl" x1="18" y1="365" x2="520" y2="365" stroke="#3fd1b0" stroke-width="3" stroke-linecap="round"/><text x="440" y="389" font-size="10.5" font-weight="700" fill="#3fd1b0">HELD</text><circle class="pr" cx="34" cy="365" r="6" fill="#3fd1b0" style="animation-delay:2.0999999999999996s"/><rect x="522" y="341" width="10" height="48" rx="3" fill="#e8edf4"/></svg><video class="vid" id="hv" src="hero.mp4" autoplay muted loop playsinline preload="metadata"></video><span class="stamp big b hs">Breached · 3 of 4</span><svg class="seal" viewBox="0 0 120 120" aria-hidden="true"><use href="#seal"/></svg></div>
 </div>
-</div></header>
-
+</header>
+<div class="tick" aria-hidden="true"><div class="tr"><span>Findings filed</span><b>Lock-up enforced at 180 days. The terms promise 360.</b><b>transferFrom() never checks the accredited-investor rule.</b><b>The holder cap is enforced when tokens are issued, never when they change hands.</b><span>Findings filed</span><b>Lock-up enforced at 180 days. The terms promise 360.</b><b>transferFrom() never checks the accredited-investor rule.</b><b>The holder cap is enforced when tokens are issued, never when they change hands.</b></div></div>
 <section class="w sec" id="how">
-<h2>How it works</h2>
-<p class="sub">Three steps, no blockchain knowledge needed to follow the result.</p>
+<p class="k">Procedure</p>
+<h2>How a test works</h2>
 <ol class="st">
 <li><b>Read the terms</b><span>Tripwire pulls the promises out of the offering document: lock-ups, who may buy, holder caps and blocked countries.</span></li>
 <li><b>Attack the token</b><span>For every promise it tries the move that should be illegal, from direct transfers to approved spenders.</span></li>
-<li><b>See the gap</b><span>Each breach shows the legal sentence beside the line of code that contradicts it.</span></li>
+<li><b>File the report</b><span>Each breach is stamped, with the legal sentence beside the line of code that contradicts it.</span></li>
 </ol>
 </section>
-
 <section class="w sec">
+<p class="k">Beneficiaries</p>
 <h2>Who it protects</h2>
 <div class="au">
 <div><b>Investors</b><span>Learn whether the rules that protect them are real before they buy.</span></div>
@@ -119,41 +141,42 @@ summary{cursor:pointer;font-weight:700}
 <div><b>Regulators and auditors</b><span>Get evidence of enforcement instead of a promise.</span></div>
 </div>
 </section>
-
 <section class="w sec" id="demo">
-<h2>Try it on a real example</h2>
-<p class="sub">Aurelia is a building sold as tokens. Attack it, then fix it and watch the same attack bounce off.</p>
+<p class="k">The test</p>
+<h2>Put the token in the chamber</h2>
+<p class="sub">Aurelia is a building sold as tokens. Attack it, read the report, then fix the token and watch the same attack bounce off.</p>
 <div class="demo">
-<div>
-<button class="btn" id="atk">Attack the token</button>
-<div class="gate"><div class="gh"><span id="tn">ART as deployed</span><span>Each beam is one promise</span></div><div id="lanes"></div></div>
-<details>
-<summary>Test your own terms</summary>
+<div class="chamber">
+<div class="ch"><span id="tn">ART as deployed</span><span>Test chamber</span></div>
+<div id="lanes"></div>
+<div class="row"><button class="btn" id="atk">Attack the token</button></div>
+<details><summary>Test your own terms</summary>
 <textarea class="doc" id="doc" aria-label="Offering terms"></textarea>
 <div class="row" style="margin-top:12px"><button class="btn alt" id="own">Attack with these terms</button></div>
-<p class="sm" id="msg" role="status">Your terms are tested against the sample token, ART.</p>
-</details>
+<p class="sm" id="msg" role="status">Your terms are tested against the sample token, ART.</p></details>
 </div>
-<div>
-<div class="sum" id="sum" hidden><p class="big" id="big"></p><p class="sm" id="sm"></p>
-<div class="row"><button class="btn" id="fix">Apply the fix and replay</button><button class="btn alt" id="cp">Copy result</button></div></div>
-<div id="pan"></div>
-</div>
+<article class="paper" id="rep">
+<div class="ph2"><span>Test report</span><span id="sn">No. ------</span></div>
+<p class="spec">Specimen: <b>Aurelia Real Estate Token</b> · <span id="tk">as deployed</span></p>
+<ol id="items"></ol>
+<div id="vd"></div>
+<div id="finds"></div>
+<div class="row" id="acts" hidden><button class="btn" id="fix">Apply the fix and re-test</button><button class="btn alt" id="cp">Copy result</button></div>
+</article>
 </div>
 </section>
-
-<footer class="w"><p class="fine">The same attacks run on a real EVM chain in the project’s repository (run.mjs), with transaction hashes in its report files. This page replays them on a simulated model of the token. Tripwire tests whether code enforces the terms. It does not judge whether the terms are legally sufficient and is not legal advice. <a href="https://github.com/BenCoy09/tripwire" target="_blank" rel="noopener">Source on GitHub</a>.</p></footer>
+<footer class="w ft"><svg viewBox="0 0 120 120" aria-hidden="true"><use href="#seal"/></svg><p class="fine">The same attacks run on a real EVM chain, with transaction hashes in the reports. This page replays them on a simulated model of the token. Tripwire tests whether code enforces the terms. It does not judge whether the terms are legally sufficient and is not legal advice.</p></footer>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const ev=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return"ev-"+(h>>>0).toString(16).padStart(8,"0")};
 const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
 const SAMPLE="Aurelia Real Estate Token (ART): summary of offering terms\n\nTokens may only be transferred to accredited investors.\nEach holder is subject to a 12-month lock-up beginning on the date of that holder’s purchase.\nThe number of record holders shall not exceed 500 holders.\nTokens may not be offered or transferred to residents of Iran, North Korea and Syria.";
 const TOKENS={A:{name:"ART as deployed",lockup:180,acc:"transfer",cap:0,blocked:["Iran","North Korea","Syria"]},B:{name:"ART after the fix",lockup:360,acc:"both",cap:500,blocked:["Iran","North Korea","Syria"]}};
 const TITLE={lockup:"Lock-up",accredited:"Accredited investors only",cap:"Holder cap",jurisdiction:"Blocked countries"};
 const U={day:1,month:30,year:365};
 const S={rules:[],tok:"A",busy:false,res:null,ctrl:true};
-const PH='<p class="ph">Press “Attack the token”. The legal sentence and the code line that contradicts it will appear here.</p>';
 
 function extract(text){
 const out=[],add=(type,clause,x)=>out.push({type,clause,...x});
@@ -184,34 +207,39 @@ if(r.type==="cap")return`<b>// cap is enforced when tokens are issued,\n// never
 const miss=r.list.filter(c=>!t.blocked.includes(c)).join(", ");
 return`blocked = [${esc(t.blocked.join(", "))}]\n<b>// missing: ${esc(miss)}</b>`}
 
-function lanes(){
-$("#tn").textContent=TOKENS[S.tok].name;
-$("#lanes").innerHTML=S.rules.map((r,i)=>`<div class="lane"><div class="lh"><b>${TITLE[r.type]}</b><span>${esc(r.val)}</span></div><div class="trk"><i class="beam"></i><i class="dot"></i><i class="post"></i></div><div class="rs" id="rs${i}">Ready</div></div>`).join("");
-$("#sum").hidden=true;$("#pan").innerHTML=PH}
 
+function lanes(){
+$("#tn").textContent=TOKENS[S.tok].name;$("#tk").textContent=S.tok==="A"?"as deployed":"after the fix";
+$("#lanes").innerHTML=S.rules.map(r=>`<div class="lane"><div class="lh"><b>${TITLE[r.type]}</b><span>${esc(r.val)}</span></div><div class="trk"><i class="beam"></i><i class="dot"></i><i class="post"></i></div></div>`).join("");
+$("#items").innerHTML=S.rules.map((r,i)=>`<li><span class="t">${TITLE[r.type]}<small>${esc(r.val)}</small></span><span class="sl" id="st${i}">awaiting test</span></li>`).join("");
+$("#sn").textContent="No. ------";$("#vd").innerHTML="";$("#acts").hidden=true;
+$("#finds").innerHTML='<p class="mu">Findings appear here: the legal sentence beside the line of code that contradicts it.</p>'}
 function evaluate(){
 const t=TOKENS[S.tok],L=(S.rules.find(r=>r.type==="lockup")||{n:0}).n,base=L+10,cp=S.rules.find(r=>r.type==="cap");
 S.res=S.rules.map(r=>{const atks=plan(r,L,base).map(a=>({...a,res:attempt(t,a)}));return{r,hit:atks.find(a=>a.res===null)}});
 S.ctrl=attempt(t,{via:"transfer",day:base,country:"Canada",holders:Math.max(0,(cp?cp.n:1)-1)})===null}
 
+
 async function attack(){
 if(S.busy)return;S.busy=true;$("#atk").disabled=true;evaluate();lanes();
 const els=[...document.querySelectorAll(".lane")];
-for(let i=0;i<els.length;i++){const e=els[i],o=S.res[i],c=$("#rs"+i);
-c.textContent="Attacking";void e.offsetWidth;e.classList.add("go");
+for(let i=0;i<els.length;i++){const e=els[i],o=S.res[i],c=$("#st"+i);
+void e.offsetWidth;e.classList.add("go");
 if(!calm)await sleep(950);
-e.classList.add(o.hit?"bad":"ok");c.textContent=o.hit?"Breached":"Held";c.className="rs "+(o.hit?"b":"h");
-if(!calm)await sleep(260)}
+e.classList.add(o.hit?"bad":"ok");
+c.className="";c.innerHTML=`<span class="stamp ${o.hit?"b":"h"}">${o.hit?"Breached":"Held"}</span>`;
+if(!calm)await sleep(300)}
 summary();S.busy=false;$("#atk").disabled=false}
 
 function summary(){
-const n=S.res.length,held=S.res.filter(o=>!o.hit).length,t=TOKENS[S.tok];
-$("#big").textContent=held===n?`All ${n} promises hold.`:`${held} of ${n} promises held.`;
-$("#sm").textContent=(held===n?"Every attack bounced off.":`The paperwork and the code disagree on ${n-held}. Here is where.`)+(S.ctrl?" A legal transfer still went through.":" The token also blocked a legal transfer.");
-$("#pan").innerHTML=S.res.filter(o=>o.hit).map(o=>`<div class="cc"><div><small>The terms say</small><q>${esc(o.r.clause)}</q></div><div><small>The code does</small><pre>${code(o.r,t)}</pre><p class="why">${esc(o.hit.label)} (${o.hit.via}) went through.</p></div></div>`).join("")||'<p class="ph">Nothing to show. Every promise held.</p>';
-$("#fix").textContent=S.tok==="A"?"Apply the fix and replay":"Show the broken token again";
-$("#sum").hidden=false;
-if(innerWidth<980)$("#sum").scrollIntoView({behavior:calm?"auto":"smooth",block:"nearest"})}
+const n=S.res.length,bad=S.res.filter(o=>o.hit),held=n-bad.length,ok=held===n,t=TOKENS[S.tok];
+const sn="TW-"+ev(S.tok+S.res.map(o=>o.hit?1:0).join("")).slice(3,9).toUpperCase();
+$("#sn").textContent="No. "+sn;
+$("#vd").innerHTML=`<div class="vd"><div><small>Result</small><b>${ok?`All ${n} promises enforced`:`${held} of ${n} promises held`}</b></div><span class="stamp big ${ok?"h":"b"}">${ok?"Certified":"Not certified"}</span></div>`;
+$("#finds").innerHTML=bad.map((o,k)=>`<div class="fd"><small>Finding ${k+1}</small><q>${esc(o.r.clause)}</q><pre>${code(o.r,t)}</pre><p class="why">${esc(o.hit.label)} (${o.hit.via}) went through.</p></div>`).join("")||`<p class="mu">No findings. Every attack bounced off${S.ctrl?", and a legal transfer still went through":""}.</p>`;
+$("#fix").textContent=S.tok==="A"?"Apply the fix and re-test":"Show the broken token again";
+$("#acts").hidden=false;
+if(innerWidth<980)$("#rep").scrollIntoView({behavior:calm?"auto":"smooth",block:"start"})}
 
 $("#atk").onclick=attack;
 $("#fix").onclick=()=>{S.tok=S.tok==="A"?"B":"A";attack()};
@@ -222,13 +250,12 @@ $("#msg").textContent="Your terms are tested against the sample token, ART.";
 S.rules=r;S.tok="A";lanes();$("#demo").scrollIntoView({behavior:calm?"auto":"smooth"});attack()};
 $("#cp").onclick=async()=>{
 const n=S.res.length,held=S.res.filter(o=>!o.hit).length;
-const txt=[`Tripwire: ${TOKENS[S.tok].name}`,`${held} of ${n} promises held.`,"",...S.res.map(o=>`${TITLE[o.r.type]}: ${o.hit?"BREACHED. "+o.hit.label+" ("+o.hit.via+") went through.":"held"}`),"","Mechanical enforcement test on a simulated token model. Not legal advice."].join("\n");
+const txt=[`Tripwire test report ${$("#sn").textContent}`,`Specimen: ${TOKENS[S.tok].name}`,`${held} of ${n} promises held.`,"",...S.res.map(o=>`${TITLE[o.r.type]}: ${o.hit?"BREACHED. "+o.hit.label+" ("+o.hit.via+") went through.":"held"}`),"","Mechanical enforcement test on a simulated token model. Not legal advice."].join("\n");
 let m="Copied";try{await navigator.clipboard.writeText(txt)}catch(e){m="Copy not available here"}
 const b=$("#cp"),o=b.textContent;b.textContent=m;setTimeout(()=>b.textContent=o,1800)};
-
 $("#doc").value=SAMPLE;S.rules=extract(SAMPLE);lanes();
-
 $("#go").onclick=()=>setTimeout(attack,700);
-const hv=$("#hv");hv.addEventListener("canplay",()=>hv.style.opacity=1);</script>
+const hv=$("#hv");hv.addEventListener("canplay",()=>hv.style.opacity=1);
+</script>
 </body>
 </html>
