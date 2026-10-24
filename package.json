@@ -1,0 +1,10 @@
+{
+  "name": "tripwire",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deployed": "node run.mjs deployed",
+    "patched": "node run.mjs patched"
+  },
+  "dependencies": { "viem": "^2.21.0" }
+}

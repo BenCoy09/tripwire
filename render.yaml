@@ -1,0 +1,6 @@
+services:
+  - type: web
+    name: tripwire
+    runtime: static
+    buildCommand: echo "static site"
+    staticPublishPath: ./web

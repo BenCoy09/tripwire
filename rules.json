@@ -1,0 +1,6 @@
+{
+  "lockupDays": 360,
+  "accreditedOnly": true,
+  "holderCap": 500,
+  "blocked": ["IR", "KP", "SY"]
+}

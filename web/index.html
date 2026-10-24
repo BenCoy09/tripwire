@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tripwire</title>
+<style>
+:root{--bg:#eef1f5;--sf:#fff;--ink:#142033;--mu:#5b6677;--ln:#d5dbe4;--mk:#ffe58a;--br:#b42318;--brb:#fde9e7;--hd:#0b6b5c;--hdb:#e0f3ee;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e141d;--sf:#151d29;--ink:#e8edf4;--mu:#93a0b3;--ln:#27313f;--mk:#6b5a1c;--br:#ff8b7e;--brb:#3a1a17;--hd:#5fd0b8;--hdb:#12302b;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e141d;--sf:#151d29;--ink:#e8edf4;--mu:#93a0b3;--ln:#27313f;--mk:#6b5a1c;--br:#ff8b7e;--brb:#3a1a17;--hd:#5fd0b8;--hdb:#12302b;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*:before,*:after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:640px;margin:0 auto;padding:20px 16px 48px}
+h1{font:700 30px/1.1 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;margin:8px 0 6px;letter-spacing:-.01em}
+.sub{color:var(--mu);margin:0 0 20px;max-width:46ch}
+nav{display:flex;gap:4px;background:var(--ln);padding:4px;border-radius:12px;margin-bottom:16px}
+nav button{flex:1;border:0;background:transparent;color:var(--mu);font:inherit;font-weight:600;padding:10px 6px;border-radius:9px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--sf);color:var(--ink)}
+nav button:disabled{opacity:.45;cursor:default}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+.doc{width:100%;min-height:300px;resize:vertical;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-left:4px solid var(--ink);border-radius:4px 10px 10px 4px;padding:16px;font:16px/1.65 "Iowan Old Style",Charter,Georgia,serif}
+.row{display:flex;gap:10px;margin-top:12px;flex-wrap:wrap}
+.btn{border:1px solid var(--ink);background:var(--ink);color:var(--bg);font:inherit;font-weight:600;padding:12px 18px;border-radius:999px;cursor:pointer}
+.btn.alt{background:transparent;color:var(--ink);border-color:var(--ln)}
+.btn:disabled{opacity:.4;cursor:default}
+.note{color:var(--mu);font-size:14px;margin:12px 0 0}
+.rule{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:14px 16px;margin-bottom:10px}
+.rule label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.rule input{margin-top:5px;width:18px;height:18px;accent-color:var(--ink)}
+.rt{font-weight:700}
+.rv{color:var(--mu);font-size:14px}
+q{display:block;margin:8px 0 0 28px;font:italic 15px/1.55 "Iowan Old Style",Charter,Georgia,serif;quotes:none}
+mark{background:var(--mk);color:inherit;padding:0 2px;border-radius:2px}
+h2{font:700 18px/1.2 "Iowan Old Style",Georgia,serif;margin:22px 0 10px}
+.seg{display:grid;gap:8px}
+.seg button{text-align:left;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-radius:10px;padding:12px 14px;font:inherit;cursor:pointer}
+.seg button[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.seg b{display:block}.seg span{color:var(--mu);font-size:14px}
+.sum{background:var(--sf);border:1px solid var(--ln);border-radius:10px;padding:16px;margin-bottom:14px}
+.big{font:700 26px/1.15 "Iowan Old Style",Georgia,serif;margin:0}
+.meter{display:flex;gap:4px;margin-top:12px}
+.meter i{flex:1;height:8px;border-radius:2px;background:var(--ln)}
+.meter i.h{background:var(--hd)}.meter i.b{background:var(--br)}
+.grp{background:var(--sf);border:1px solid var(--ln);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.gh{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:12px 16px}
+.pill{font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--ln);color:var(--mu);white-space:nowrap}
+.pill.h{background:var(--hdb);color:var(--hd)}.pill.b{background:var(--brb);color:var(--br)}
+.cl{margin:0;padding:0 16px 10px;color:var(--mu);font:italic 14px/1.5 "Iowan Old Style",Georgia,serif}
+.red{margin:0 16px 10px;padding:10px 12px;background:var(--brb);border-radius:8px;font-size:14px}
+.red del{color:var(--br)}.red ins{text-decoration:none;font-weight:700}
+.at{display:flex;justify-content:space-between;gap:12px;padding:10px 16px;border-top:1px solid var(--ln);font-size:14px}
+.at small{display:block;color:var(--mu);font:12px ui-monospace,Menlo,Consolas,monospace}
+.at .r{text-align:right;font-weight:600;color:var(--mu)}
+.at .r.h{color:var(--hd)}.at .r.b{color:var(--br)}
+.fine{color:var(--mu);font-size:13px;margin-top:18px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1>Tripwire</h1>
+<p class="sub">Test a token against the legal terms it was sold under. Read the promises, then try to break them.</p>
+<nav role="tablist" aria-label="Steps">
+<button role="tab" id="t-terms" aria-selected="true">Terms</button>
+<button role="tab" id="t-rules" aria-selected="false" disabled>Rules</button>
+<button role="tab" id="t-report" aria-selected="false" disabled>Report</button>
+</nav>
+
+<section id="p-terms">
+<textarea class="doc" id="doc" aria-label="Offering terms" placeholder="Paste the offering terms or prospectus summary here."></textarea>
+<div class="row"><button class="btn" id="go-extract">Extract rules</button><button class="btn alt" id="sample">Load sample terms</button></div>
+<p class="note" id="msg" role="status"></p>
+</section>
+
+<section id="p-rules" hidden>
+<h2>Promises found in the terms</h2>
+<div id="rules"></div>
+<p class="note">Untick anything that should not be tested. Only ticked promises are attacked.</p>
+<h2>Token under test</h2>
+<div class="seg" id="tok"></div>
+<div class="row"><button class="btn" id="go-run">Run attacks</button></div>
+</section>
+
+<section id="p-report" hidden>
+<div class="sum"><p class="big" id="big"></p><p class="note" id="sm" style="margin-top:6px"></p><div class="meter" id="mt"></div></div>
+<div id="rep"></div>
+<div class="row"><button class="btn alt" id="copy">Copy report</button><button class="btn alt" id="again">Test the other token</button></div>
+<p class="fine">Tripwire tests whether a token mechanically enforces what the terms promise. It does not judge whether the terms are legally sufficient and is not legal advice. Attacks run against a simulated model of the token, not a live chain.</p>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const calm=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const ev=s=>{let h=2166136261;for(const c of s){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return"ev-"+(h>>>0).toString(16).padStart(8,"0")};
+const SAMPLE="Aurelia Real Estate Token (ART): summary of offering terms\n\nTokens may only be transferred to accredited investors.\nEach holder is subject to a 12-month lock-up beginning on the date of that holder’s purchase.\nThe number of record holders shall not exceed 500 holders.\nTokens may not be offered or transferred to residents of Iran, North Korea and Syria.";
+const TOKENS={
+A:{name:"ART as deployed",note:"The build currently live. Contains planted defects.",lockup:180,acc:"transfer",cap:0,blocked:["Iran","North Korea","Syria"]},
+B:{name:"ART patched",note:"The same token after the fixes.",lockup:360,acc:"both",cap:500,blocked:["Iran","North Korea","Syria"]}};
+const TITLE={lockup:"Lock-up",accredited:"Accredited investors only",cap:"Holder cap",jurisdiction:"Blocked jurisdictions"};
+const U={day:1,month:30,year:365};
+const S={rules:[],tok:"A",tab:"terms",G:null,ctrl:null,base:0};
+
+function extract(text){
+const out=[],add=(type,clause,hit,x)=>out.push({type,clause,hit,on:true,...x});
+const ss=text.split(/\n+/).flatMap(l=>l.split(/(?<=\.)\s+(?=[A-Z])/)).map(s=>s.trim()).filter(Boolean);
+for(const s of ss){let m;
+if(m=s.match(/(\d+)[\s-]*(day|month|year)s?[\s-]*(?:lock-?up|holding period)/i)||s.match(/lock-?up(?: period)? of (\d+)[\s-]*(day|month|year)s?/i)){const u=m[2].toLowerCase();add("lockup",s,m[0],{n:+m[1]*U[u],val:m[1]+" "+u+(m[1]==1?"":"s")})}
+if(/accredited investors?/i.test(s)&&/only|solely|limited to|restricted to/i.test(s))add("accredited",s,s.match(/accredited investors?/i)[0],{val:"Every transfer path"});
+if(m=s.match(/(?:no more than|maximum of|not exceed|up to|capped at)\s*(\d[\d,]*)\s*(?:holders|investors|record holders)/i)){const n=+m[1].replace(/,/g,"");add("cap",s,m[0],{n,val:n+" holders"})}
+if(/\b(?:not|prohibited|barred)\b/i.test(s)&&(m=s.match(/(?:residents? of|persons? (?:in|located in)|citizens of)\s+([A-Z][A-Za-z ,]*)/))){const list=m[1].split(/,\s*|\s+and\s+/).map(x=>x.trim()).filter(Boolean);add("jurisdiction",s,m[0],{list,val:list.join(", ")})}}
+return out}
+
+function tab(t){S.tab=t;for(const k of["terms","rules","report"]){$("#p-"+k).hidden=k!==t;$("#t-"+k).setAttribute("aria-selected",k===t)}scrollTo(0,0)}
+$("#t-terms").onclick=()=>tab("terms");$("#t-rules").onclick=()=>tab("rules");$("#t-report").onclick=()=>tab("report");
+$("#sample").onclick=()=>{$("#doc").value=SAMPLE;$("#msg").textContent=""};
+$("#go-extract").onclick=()=>{
+const r=extract($("#doc").value);
+if(!r.length){$("#msg").textContent="No testable promises found. Look for a lock-up period, an accredited-only limit, a holder cap or a list of blocked countries.";return}
+S.rules=r;$("#msg").textContent="";drawRules();$("#t-rules").disabled=false;tab("rules")};
+
+function drawRules(){
+$("#rules").innerHTML=S.rules.map((r,i)=>`<div class="rule"><label><input type="checkbox" data-i="${i}" ${r.on?"checked":""}><span><span class="rt">${TITLE[r.type]}</span> <span class="rv">${esc(r.val)}</span></span></label><q>${esc(r.clause).split(esc(r.hit)).join("<mark>"+esc(r.hit)+"</mark>")}</q></div>`).join("");
+$("#rules").querySelectorAll("input").forEach(el=>el.onchange=()=>{S.rules[el.dataset.i].on=el.checked;$("#go-run").disabled=!S.rules.some(r=>r.on)});
+$("#tok").innerHTML=Object.entries(TOKENS).map(([k,t])=>`<button data-k="${k}" aria-pressed="${k===S.tok}"><b>${t.name}</b><span>${t.note}</span></button>`).join("");
+$("#tok").querySelectorAll("button").forEach(b=>b.onclick=()=>{S.tok=b.dataset.k;drawRules()});
+$("#go-run").disabled=!S.rules.some(r=>r.on)}
+
+const atk=(label,via,o)=>({label,via,day:0,...o});
+function plan(r,L,base){
+if(r.type==="lockup")return[atk(`Direct transfer on day ${L-1}`,"transfer",{day:L-1}),atk("Approved spender moves tokens on day 1","transferFrom",{day:1})];
+if(r.type==="accredited")return[atk("Transfer to a non-accredited wallet","transfer",{day:base,acc:false}),atk("Spender sends to a non-accredited wallet","transferFrom",{day:base,acc:false})];
+if(r.type==="cap")return[atk(`New holder when all ${r.n} slots are taken`,"transfer",{day:base,holders:r.n})];
+return r.list.map(c=>atk(`Transfer to a wallet in ${c}`,"transfer",{day:base,country:c}))}
+function attempt(t,a){
+if(t.lockup&&a.day<t.lockup)return"LockupActive";
+if(a.acc===false&&(a.via==="transfer"||t.acc==="both"))return"NotAccredited";
+if(t.cap&&(a.holders||0)>=t.cap)return"HolderCapReached";
+if(a.country&&t.blocked.includes(a.country))return"BlockedJurisdiction";
+return null}
+function redline(r,t){
+if(r.type==="lockup")return[`${r.n} days`,`${t.lockup} days`];
+if(r.type==="cap")return[`${r.n} holders`,t.cap?`${t.cap} holders`:"no limit"];
+if(r.type==="accredited")return["every transfer path",t.acc==="both"?"every path":"transfer() only"];
+return[r.list.join(", "),t.blocked.join(", ")||"none"]}
+
+async function run(){
+const t=TOKENS[S.tok],rs=S.rules.filter(r=>r.on);
+const L=(rs.find(r=>r.type==="lockup")||{n:0}).n,base=L+10,cap=(rs.find(r=>r.type==="cap")||{n:1}).n;
+S.base=base;
+S.G=rs.map(r=>({r,atks:plan(r,L,base).map(a=>{const res=attempt(t,a);return{...a,res,bad:res===null,id:ev(S.tok+a.label+a.via+a.day)}})}));
+const c=atk("Compliant transfer after the lock-up","transfer",{day:base,country:"Canada",holders:Math.max(0,cap-1)});
+const cr=attempt(t,c);S.ctrl={...c,res:cr,bad:cr!==null,id:ev(S.tok+c.label)};
+$("#t-report").disabled=false;tab("report");
+const total=S.G.reduce((n,g)=>n+g.atks.length,0)+1;
+for(let k=0;k<=total;k++){paint(k,total);if(!calm&&k<total)await sleep(130)}}
+$("#go-run").onclick=run;
+$("#again").onclick=()=>{S.tok=S.tok==="A"?"B":"A";drawRules();tab("rules")};
+
+function row(a,done,ctrl){
+const out=!done?["Pending",""]:ctrl?(a.bad?["Blocked a legal transfer","b"]:["Succeeded as it should","h"]):(a.bad?["Succeeded: promise broken","b"]:["Reverted: "+a.res,"h"]);
+return`<div class="at"><div>${esc(a.label)}<small>${esc(a.via)} · ${a.id}</small></div><div class="r ${out[1]}">${out[0]}</div></div>`}
+function paint(k,total){
+const t=TOKENS[S.tok];let i=0,held=0,br=0,segs="";
+const html=S.G.map(g=>{
+const rows=g.atks.map(a=>row(a,i++<k)).join("");
+const fin=g.atks.every((a,j)=>{return true})&&i<=k;
+const bad=g.atks.filter(a=>a.bad).length;
+let st=`<span class="pill">Testing</span>`,rl="";
+if(fin){if(bad){br++;segs+="<i class='b'></i>";const[p,a]=redline(g.r,t);st=`<span class="pill b">Breached</span>`;rl=`<p class="red">Terms promise <del>${esc(p)}</del> Token enforces <ins>${esc(a)}</ins></p>`}else{held++;segs+="<i class='h'></i>";st=`<span class="pill h">Held</span>`}}else segs+="<i></i>";
+return`<div class="grp"><div class="gh"><b>${TITLE[g.r.type]}</b>${st}</div><p class="cl">${esc(g.r.clause)}</p>${rl}${rows}</div>`}).join("");
+const cd=k>=total,ctl=`<div class="grp"><div class="gh"><b>Control check</b><span class="pill ${cd?(S.ctrl.bad?"b":"h"):""}">${cd?(S.ctrl.bad?"Over-blocking":"Passed"):"Testing"}</span></div><p class="cl">A fully compliant transfer must still go through. A token that rejects everything proves nothing.</p>${row(S.ctrl,cd,true)}</div>`;
+$("#rep").innerHTML=html+ctl;$("#mt").innerHTML=segs;
+if(cd){const n=S.G.length;$("#big").textContent=`${held} of ${n} promise${n==1?"":"s"} held.`;$("#sm").textContent=`${TOKENS[S.tok].name}: ${br} breached${S.ctrl.bad?", and it blocked a legal transfer":""}.`}
+else{$("#big").textContent="Running attacks…";$("#sm").textContent=TOKENS[S.tok].name}}
+
+$("#copy").onclick=async()=>{
+const t=TOKENS[S.tok];
+const txt=[`Tripwire report: ${t.name}`,$("#big").textContent,"",...S.G.flatMap(g=>{const bad=g.atks.some(a=>a.bad);return[`${TITLE[g.r.type]}: ${bad?"BREACHED":"held"}`,`  Clause: ${g.r.clause}`,...g.atks.map(a=>`  - ${a.label} (${a.via}): ${a.bad?"succeeded, promise broken":"reverted "+a.res} [${a.id}]`)]}),"",`Control: ${S.ctrl.bad?"blocked a legal transfer":"legal transfer succeeded"}`,"","Mechanical enforcement test on a simulated token model. Not legal advice."].join("\n");
+let m="Copied";try{await navigator.clipboard.writeText(txt)}catch(e){m="Copy not available here"}
+const b=$("#copy"),o=b.textContent;b.textContent=m;setTimeout(()=>b.textContent=o,1800)};
+</script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+{
+  "mode": "patched",
+  "rules": {
+    "lockupDays": 360,
+    "accreditedOnly": true,
+    "holderCap": 500,
+    "blocked": [
+      "IR",
+      "KP",
+      "SY"
+    ]
+  },
+  "heldN": 4,
+  "total": 4,
+  "attacks": [
+    {
+      "rule": "Lock-up",
+      "label": "Direct transfer on day 359",
+      "via": "transfer",
+      "control": false,
+      "breach": false,
+      "result": "reverted: revert",
+      "tx": null
+    },
+    {
+      "rule": "Lock-up",
+      "label": "Approved spender moves tokens on day 1",
+      "via": "transferFrom",
+      "control": false,
+      "breach": false,
+      "result": "reverted: revert",
+      "tx": null
+    },
+    {
+      "rule": "Accredited only",
+      "label": "Transfer to a non-accredited wallet",
+      "via": "transfer",
+      "control": false,
+      "breach": false,
+      "result": "reverted: revert",
+      "tx": null
+    },
+    {
+      "rule": "Accredited only",
+      "label": "Spender sends to a non-accredited wallet",
+      "via": "transferFrom",
+      "control": false,
+      "breach": false,
+      "result": "reverted: revert",
+      "tx": null
+    },
+    {
+      "rule": "Holder cap",
+      "label": "New holder when all 500 slots are taken",
+      "via": "transfer",
+      "control": false,
+      "breach": false,
+      "result": "reverted: revert",
+      "tx": null
+    },
+    {
+      "rule": "Blocked jurisdictions",
+      "label": "Transfer to a wallet in IR",
+      "via": "transfer",
+      "control": false,
+      "breach": false,
+      "result": "reverted: revert",
+      "tx": null
+    },
+    {
+      "rule": "Blocked jurisdictions",
+      "label": "Transfer to a wallet in KP",
+      "via": "transfer",
+      "control": false,
+      "breach": false,
+      "result": "reverted: revert",
+      "tx": null
+    },
+    {
+      "rule": "Blocked jurisdictions",
+      "label": "Transfer to a wallet in SY",
+      "via": "transfer",
+      "control": false,
+      "breach": false,
+      "result": "reverted: revert",
+      "tx": null
+    },
+    {
+      "rule": "Control",
+      "label": "Compliant transfer after the lock-up",
+      "via": "transfer",
+      "control": true,
+      "breach": false,
+      "result": "succeeded, tx 0x329c65e24becd15ecb4f7df552d1cea946c9d70988d53f77e33892c1fec7921d",
+      "tx": "0x329c65e24becd15ecb4f7df552d1cea946c9d70988d53f77e33892c1fec7921d"
+    }
+  ]
+}
