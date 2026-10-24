@@ -46,3 +46,25 @@ It tests mechanical enforcement, not legal sufficiency, and is not legal advice.
 - `src/RestrictedToken.sol` reference token (deployed build with three planted defects, patched build)
 - `run.mjs` attack runner, `make-report.mjs` HTML report, `rules.json` the promises under test
 - `web/index.html` the web demo (static site, deployed on Render)
+
+## Probe a live ERC-1404 token (read-only)
+```bash
+node probe.mjs --rpc <https RPC url> --token 0xTOKEN --holder 0xSOME_CURRENT_HOLDER
+```
+Uses `eth_call` simulations only: no transactions, no keys. It asks the token whether an unknown wallet could
+receive tokens, compares the token's own restriction code with a simulated `transfer`, and writes
+`probe-<SYMBOL>.json`. Findings go to the issuer privately first (see `DISCLOSURE.md`).
+
+## Wording
+Reports say "enforced" and "not enforced", never "breach", and "All tests passed" instead of "certified".
+Findings describe what the code does under test conditions. They are not accusations or legal conclusions.
+Add `--private` to `make-report.mjs` to stamp a report as a private draft for issuer review.
+
+## Run the app (live probe)
+```bash
+npm install
+node server.mjs          # http://localhost:3000
+```
+The server serves the site and exposes `POST /api/probe`, which runs the read-only ERC-1404 probe for a token
+you paste in. Set `RPC_ETHEREUM`, `RPC_BASE`, `RPC_ARBITRUM` to your own RPC URLs for reliability.
+Deploy on Render as a **Web Service** (build `npm install`, start `node server.mjs`); see `render.yaml`.

@@ -5,7 +5,14 @@
   "scripts": {
     "deployed": "node run.mjs deployed",
     "patched": "node run.mjs patched",
-    "report": "node make-report.mjs report-deployed.json && node make-report.mjs report-patched.json"
+    "report": "node make-report.mjs report-deployed.json && node make-report.mjs report-patched.json",
+    "probe": "node probe.mjs",
+    "start": "node server.mjs"
   },
-  "dependencies": { "viem": "^2.21.0" }
+  "dependencies": {
+    "viem": "^2.21.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
 }
