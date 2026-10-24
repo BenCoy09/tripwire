@@ -3,87 +3,146 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tripwire</title>
+<title>Tripwire: do the legal terms match the code?</title>
 <style>
-:root{--bg:#eef1f5;--sf:#fff;--ink:#142033;--mu:#5b6677;--ln:#d5dbe4;--br:#d92d20;--brb:#fdeceb;--hd:#0f8a73;--hdb:#e0f3ee;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root{--bg:#eef1f5;--sf:#fff;--ink:#142033;--mu:#5b6677;--ln:#d5dbe4;--br:#d92d20;--brb:#fdeceb;--hd:#0f8a73;--hdb:#e0f3ee;color-scheme:light;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d131c;--sf:#151d29;--ink:#e8edf4;--mu:#93a0b3;--ln:#27313f;--br:#ff6b5e;--brb:#3a1a17;--hd:#3fd1b0;--hdb:#12302b;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#0d131c;--sf:#151d29;--ink:#e8edf4;--mu:#93a0b3;--ln:#27313f;--br:#ff6b5e;--brb:#3a1a17;--hd:#3fd1b0;--hdb:#12302b;color-scheme:dark}
-html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html{scroll-behavior:smooth;scroll-padding-top:12px}
 *,*:before,*:after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-main{max-width:760px;margin:0 auto;padding:22px 18px 56px}
-.brand{font-weight:700;letter-spacing:.01em;margin:0 0 28px}
-h1{font:700 clamp(32px,8vw,50px)/1.04 "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;margin:0 0 14px;letter-spacing:-.015em}
-.lead{color:var(--mu);font-size:18px;margin:0 0 22px;max-width:52ch}
+.w{max-width:1180px;margin:0 auto;padding:0 24px}
+.serif,h1,h2,.big{font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif}
 button{font:inherit;cursor:pointer}
-button:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
-.btn{border:1px solid var(--ink);background:var(--ink);color:var(--bg);font-weight:700;padding:14px 24px;border-radius:999px;font-size:17px}
-.btn.alt{background:transparent;color:var(--ink);border-color:var(--ln);font-size:15px;padding:11px 18px;font-weight:600}
+a:focus-visible,button:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--hd);outline-offset:3px}
+.btn{display:inline-block;text-decoration:none;border:1px solid var(--ink);background:var(--ink);color:var(--bg);font-weight:700;padding:14px 24px;border-radius:999px;font-size:17px}
+.btn.alt{background:transparent;color:var(--ink);border-color:var(--ln);font-size:15px;padding:12px 20px;font-weight:600}
 .btn:disabled{opacity:.45;cursor:default}
-.gate{margin-top:26px;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:6px 18px}
+.hero{background:#0a101b;color:#e8edf4;padding-top:env(safe-area-inset-top,0px)}
+.nv{display:flex;justify-content:space-between;align-items:center;padding:20px 0}
+.nv b{font-size:19px}.nv a{color:#b9c4d6;text-decoration:none;margin-left:22px;font-size:15px}.nv a:hover{color:#fff}
+.hg{display:grid;gap:26px;align-items:center;padding:12px 0 52px}
+@media (min-width:900px){.hg{grid-template-columns:1.02fr 1fr;min-height:min(76vh,620px)}}
+.hero h1{font-size:clamp(36px,5.2vw,64px);line-height:1.03;margin:0 0 18px;letter-spacing:-.015em}
+.hero .lead{color:#b9c4d6;font-size:19px;max-width:48ch;margin:0 0 26px}
+.hero .btn{background:#e8edf4;color:#0a101b;border-color:#e8edf4}
+.hero .btn.alt{background:transparent;color:#e8edf4;border-color:#3a4658}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.proof{color:#93a0b3;font-size:15px;margin:24px 0 0;max-width:46ch}
+.art{position:relative;border-radius:14px;overflow:hidden;background:#0d1626}
+.art svg{display:block;width:100%;height:auto}
+.vid{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .6s}
+.pr{animation:run 4.2s linear infinite;opacity:0}.pt{animation:thru 4.2s linear infinite;opacity:0}
+@keyframes run{0%{transform:translateX(0);opacity:0}6%{opacity:1}80%{transform:translateX(470px);opacity:1}100%{transform:translateX(470px);opacity:0}}
+@keyframes thru{0%{transform:translateX(0);opacity:0}6%{opacity:1}85%{transform:translateX(535px);opacity:1}100%{transform:translateX(560px);opacity:0}}
+.sp{transform-box:fill-box;transform-origin:center;animation:sp 1.6s ease-in-out infinite}
+@keyframes sp{50%{opacity:.25;transform:scale(1.7)}}
+.bl{animation:bl 1.6s steps(2,jump-none) infinite}@keyframes bl{50%{opacity:.35}}
+.tl{animation:gl 3s ease-in-out infinite}@keyframes gl{50%{opacity:.6}}
+@media (prefers-reduced-motion:reduce){.art svg *{animation:none!important}.pr,.pt{opacity:1;transform:translateX(250px)}html{scroll-behavior:auto}}
+.sec{padding-top:64px}
+h2{font-size:clamp(26px,3.4vw,36px);line-height:1.1;margin:0 0 6px;letter-spacing:-.01em}
+.sub{color:var(--mu);margin:0 0 4px;max-width:60ch}
+.st{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:0;counter-reset:s}
+@media (min-width:820px){.st,.au{grid-template-columns:repeat(3,1fr);gap:28px}}
+.st li{counter-increment:s;padding:16px 0 20px;border-top:2px solid var(--ink)}
+.st li:before{content:counter(s);display:block;font:700 30px/1 Georgia,serif;margin-bottom:10px}
+.st b,.au b{display:block;font-size:18px;margin-bottom:4px}
+.st span,.au span{color:var(--mu)}
+.au{display:grid;gap:0;margin-top:20px}
+.au div{padding:16px 0 18px;border-top:1px solid var(--ln)}
+.demo{display:grid;gap:26px;margin-top:22px}
+@media (min-width:980px){.demo{grid-template-columns:1.05fr 1fr;align-items:start}}
+.gate{margin-top:16px;background:var(--sf);border:1px solid var(--ln);border-radius:14px;padding:6px 18px}
 .gh{display:flex;justify-content:space-between;gap:10px;padding:12px 0 8px;color:var(--mu);font-size:14px}
 .lane{display:grid;grid-template-columns:170px 1fr 92px;gap:14px;align-items:center;padding:16px 0;border-top:1px solid var(--ln)}
 .lh b{display:block}.lh span{color:var(--mu);font-size:14px}
 .trk{position:relative;height:30px}
 .beam{position:absolute;left:0;right:12px;top:13px;height:4px;border-radius:2px;background:var(--ln);transition:background .3s}
-.post{position:absolute;right:0;top:0;width:12px;height:30px;border-radius:3px;background:var(--ink);transition:background .3s}
+.post{position:absolute;right:0;top:0;width:12px;height:30px;border-radius:3px;background:var(--ink)}
 .dot{position:absolute;left:0;top:7px;width:16px;height:16px;border-radius:50%;background:var(--mu);transition:left .9s cubic-bezier(.45,0,.75,.55),background .3s,opacity .4s}
 .lane.go .dot{left:calc(100% - 32px)}
-.lane.ok .beam{background:var(--hd)}.lane.ok .dot{background:var(--hd)}
+.lane.ok .beam,.lane.ok .dot{background:var(--hd)}
 .lane.bad .beam{background:linear-gradient(90deg,var(--br) 0 76%,transparent 76% 90%,var(--br) 90%)}
 .lane.bad .post{background:var(--br);animation:fl .6s}
 .lane.bad .dot{left:calc(100% - 4px);background:var(--br);opacity:0;transition:left .3s ease-in,opacity .5s .15s}
 @keyframes fl{0%{box-shadow:0 0 0 0 var(--br)}100%{box-shadow:0 0 0 16px transparent}}
-.rs{text-align:right;font-weight:700;color:var(--mu);font-size:15px}
-.rs.h{color:var(--hd)}.rs.b{color:var(--br)}
+.rs{text-align:right;font-weight:700;color:var(--mu);font-size:15px}.rs.h{color:var(--hd)}.rs.b{color:var(--br)}
 @media (max-width:580px){.lane{grid-template-columns:1fr 92px}.lane .trk{grid-column:1/-1;order:3}}
-.sum{margin-top:22px}
-.big{font:700 clamp(26px,6vw,34px)/1.1 "Iowan Old Style",Georgia,serif;margin:0}
+.big{font-size:clamp(26px,3.4vw,34px);line-height:1.1;margin:0;font-weight:700}
 .sm{color:var(--mu);margin:6px 0 14px}
-.row{display:flex;gap:10px;flex-wrap:wrap}
+.ph{border:1px dashed var(--ln);border-radius:12px;padding:22px;color:var(--mu);margin:0}
 .cc{display:grid;border:1px solid var(--ln);border-radius:12px;overflow:hidden;margin-top:14px;background:var(--sf)}
-.cc>div{padding:16px}
-.cc>div+div{border-top:1px solid var(--ln)}
-@media (min-width:640px){.cc{grid-template-columns:1fr 1fr}.cc>div+div{border-top:0;border-left:1px solid var(--ln)}}
+.cc>div{padding:16px}.cc>div+div{border-top:1px solid var(--ln)}
 .cc small{display:block;color:var(--mu);margin-bottom:8px;font-weight:600}
-.cc q{quotes:none;display:block;font:italic 17px/1.55 "Iowan Old Style",Georgia,serif}
+.cc q{quotes:none;display:block;font:italic 17px/1.55 Georgia,serif}
 pre{margin:0;font:13.5px/1.6 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap;word-break:break-word;background:var(--brb);padding:12px;border-radius:8px}
 pre b{color:var(--br)}
 .why{margin:10px 0 0;color:var(--mu);font-size:14px}
-details{margin-top:30px;border-top:1px solid var(--ln);padding-top:16px}
+details{margin-top:22px;border-top:1px solid var(--ln);padding-top:14px}
 summary{cursor:pointer;font-weight:700}
-.doc{width:100%;min-height:200px;margin-top:12px;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-left:4px solid var(--ink);border-radius:4px 10px 10px 4px;padding:14px;font:16px/1.6 "Iowan Old Style",Georgia,serif}
-.fine{color:var(--mu);font-size:13.5px;margin-top:26px}
+.doc{width:100%;min-height:190px;margin-top:12px;background:var(--sf);color:var(--ink);border:1px solid var(--ln);border-left:4px solid var(--ink);border-radius:4px 10px 10px 4px;padding:14px;font:16px/1.6 Georgia,serif}
+.fine{color:var(--mu);font-size:13.5px;margin:0;padding:40px 0 calc(40px + env(safe-area-inset-bottom,0px));max-width:90ch}
+.fine a{color:inherit}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
-<main>
-<p class="brand">Tripwire</p>
-<h1>Does the code keep the promises the paperwork made?</h1>
-<p class="lead">A building is sold as tokens. The legal terms promise investors four things. Tripwire attacks the token to see which promises the code really keeps.</p>
+<header class="hero"><div class="w">
+<nav class="nv"><b>Tripwire</b><span><a href="#how">How it works</a><a href="#demo">Try it</a><a href="https://github.com/BenCoy09/tripwire" target="_blank" rel="noopener">GitHub</a></span></nav>
+<div class="hg">
+<div>
+<h1>The legal terms say one thing. The code does another.</h1>
+<p class="lead">Tripwire reads the legal terms behind a tokenized asset, then attacks the token to find out which promises the code actually keeps.</p>
+<div class="row"><a class="btn" id="go" href="#demo">See it break a token</a><a class="btn alt" href="https://github.com/BenCoy09/tripwire" target="_blank" rel="noopener">View the code</a></div>
+<p class="proof">Run on a real EVM chain: the deployed token held 1 of 4 promises. The fixed token held 4 of 4.</p>
+</div>
+<div class="art"><svg viewBox="0 0 600 520" role="img" aria-label="A tokenized building behind four laser beams. Three are cut, one holds."><defs><pattern id="w" width="14" height="18" patternUnits="userSpaceOnUse"><rect x="3" y="4" width="6" height="8" rx="1" fill="#9fb4d3" opacity=".28"/></pattern></defs><rect x="40" y="170" width="110" height="330" fill="#111b2c"/><rect x="40" y="170" width="110" height="330" fill="url(#w)"/><rect x="160" y="250" width="95" height="250" fill="#15233a"/><rect x="160" y="250" width="95" height="250" fill="url(#w)"/><rect x="265" y="90" width="100" height="410" fill="#0f1a2b"/><rect x="265" y="90" width="100" height="410" fill="url(#w)"/><rect x="375" y="210" width="120" height="290" fill="#15233a"/><rect x="375" y="210" width="120" height="290" fill="url(#w)"/><rect x="505" y="300" width="60" height="200" fill="#111b2c"/><rect x="505" y="300" width="60" height="200" fill="url(#w)"/><rect x="283" y="120" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="311" y="156" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="339" y="120" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="283" y="264" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="325" y="300" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="397" y="240" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="425" y="276" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="185" y="300" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="60" y="230" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="88" y="330" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><rect x="520" y="350" width="6" height="8" rx="1" fill="#f5c96a" opacity=".85"/><line x1="0" y1="500" x2="600" y2="500" stroke="#223049"/><text x="24" y="128" font-size="12.5" fill="#b9c4d6">Accredited investors only</text><line x1="18" y1="140" x2="360" y2="140" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="400" y1="140" x2="520" y2="140" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="380" cy="140" r="7" fill="#ff6b5e" style="animation-delay:0.0s"/><text class="bl" x="358" y="164" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="140" r="6" fill="#ff6b5e" style="animation-delay:0.0s"/><rect x="522" y="116" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="203" font-size="12.5" fill="#b9c4d6">Lock-up</text><line x1="18" y1="215" x2="400" y2="215" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="440" y1="215" x2="520" y2="215" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="420" cy="215" r="7" fill="#ff6b5e" style="animation-delay:0.3s"/><text class="bl" x="398" y="239" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="215" r="6" fill="#ff6b5e" style="animation-delay:0.7s"/><rect x="522" y="191" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="278" font-size="12.5" fill="#b9c4d6">Holder cap</text><line x1="18" y1="290" x2="380" y2="290" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><line x1="420" y1="290" x2="520" y2="290" stroke="#ff6b5e" stroke-width="3" stroke-linecap="round"/><circle class="sp" cx="400" cy="290" r="7" fill="#ff6b5e" style="animation-delay:0.6s"/><text class="bl" x="378" y="314" font-size="10.5" font-weight="700" fill="#ff6b5e">BREACHED</text><circle class="pt" cx="34" cy="290" r="6" fill="#ff6b5e" style="animation-delay:1.4s"/><rect x="522" y="266" width="10" height="48" rx="3" fill="#e8edf4"/><text x="24" y="353" font-size="12.5" fill="#b9c4d6">Blocked countries</text><line class="tl" x1="18" y1="365" x2="520" y2="365" stroke="#3fd1b0" stroke-width="3" stroke-linecap="round"/><text x="440" y="389" font-size="10.5" font-weight="700" fill="#3fd1b0">HELD</text><circle class="pr" cx="34" cy="365" r="6" fill="#3fd1b0" style="animation-delay:2.0999999999999996s"/><rect x="522" y="341" width="10" height="48" rx="3" fill="#e8edf4"/></svg><video class="vid" id="hv" src="hero.mp4" autoplay muted loop playsinline preload="metadata"></video></div>
+</div>
+</div></header>
+
+<section class="w sec" id="how">
+<h2>How it works</h2>
+<p class="sub">Three steps, no blockchain knowledge needed to follow the result.</p>
+<ol class="st">
+<li><b>Read the terms</b><span>Tripwire pulls the promises out of the offering document: lock-ups, who may buy, holder caps and blocked countries.</span></li>
+<li><b>Attack the token</b><span>For every promise it tries the move that should be illegal, from direct transfers to approved spenders.</span></li>
+<li><b>See the gap</b><span>Each breach shows the legal sentence beside the line of code that contradicts it.</span></li>
+</ol>
+</section>
+
+<section class="w sec">
+<h2>Who it protects</h2>
+<div class="au">
+<div><b>Investors</b><span>Learn whether the rules that protect them are real before they buy.</span></div>
+<div><b>Issuers and their lawyers</b><span>Catch a mismatch before launch, not in a regulator’s letter.</span></div>
+<div><b>Regulators and auditors</b><span>Get evidence of enforcement instead of a promise.</span></div>
+</div>
+</section>
+
+<section class="w sec" id="demo">
+<h2>Try it on a real example</h2>
+<p class="sub">Aurelia is a building sold as tokens. Attack it, then fix it and watch the same attack bounce off.</p>
+<div class="demo">
+<div>
 <button class="btn" id="atk">Attack the token</button>
-
-<div class="gate">
-<div class="gh"><span id="tn">ART as deployed</span><span>Each beam is one promise</span></div>
-<div id="lanes"></div>
-</div>
-
-<div class="sum" id="sum" hidden>
-<p class="big" id="big"></p><p class="sm" id="sm"></p>
-<div class="row"><button class="btn" id="fix">Apply the fix and replay</button><button class="btn alt" id="cp">Copy result</button></div>
-</div>
-<div id="pan"></div>
-
+<div class="gate"><div class="gh"><span id="tn">ART as deployed</span><span>Each beam is one promise</span></div><div id="lanes"></div></div>
 <details>
 <summary>Test your own terms</summary>
 <textarea class="doc" id="doc" aria-label="Offering terms"></textarea>
 <div class="row" style="margin-top:12px"><button class="btn alt" id="own">Attack with these terms</button></div>
 <p class="sm" id="msg" role="status">Your terms are tested against the sample token, ART.</p>
 </details>
+</div>
+<div>
+<div class="sum" id="sum" hidden><p class="big" id="big"></p><p class="sm" id="sm"></p>
+<div class="row"><button class="btn" id="fix">Apply the fix and replay</button><button class="btn alt" id="cp">Copy result</button></div></div>
+<div id="pan"></div>
+</div>
+</div>
+</section>
 
-<p class="fine">The same attacks run on a real EVM chain in the project’s repository (run.mjs): the deployed token held 1 of 4 promises, the fixed token 4 of 4, with transaction hashes in the report files. This page replays them on a simulated model of the token. Tripwire tests whether code enforces the terms. It does not judge whether the terms are legally sufficient and is not legal advice.</p>
-</main>
+<footer class="w"><p class="fine">The same attacks run on a real EVM chain in the project’s repository (run.mjs), with transaction hashes in its report files. This page replays them on a simulated model of the token. Tripwire tests whether code enforces the terms. It does not judge whether the terms are legally sufficient and is not legal advice. <a href="https://github.com/BenCoy09/tripwire" target="_blank" rel="noopener">Source on GitHub</a>.</p></footer>
 <script>
 const $=s=>document.querySelector(s);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
@@ -94,6 +153,7 @@ const TOKENS={A:{name:"ART as deployed",lockup:180,acc:"transfer",cap:0,blocked:
 const TITLE={lockup:"Lock-up",accredited:"Accredited investors only",cap:"Holder cap",jurisdiction:"Blocked countries"};
 const U={day:1,month:30,year:365};
 const S={rules:[],tok:"A",busy:false,res:null,ctrl:true};
+const PH='<p class="ph">Press “Attack the token”. The legal sentence and the code line that contradicts it will appear here.</p>';
 
 function extract(text){
 const out=[],add=(type,clause,x)=>out.push({type,clause,...x});
@@ -127,7 +187,7 @@ return`blocked = [${esc(t.blocked.join(", "))}]\n<b>// missing: ${esc(miss)}</b>
 function lanes(){
 $("#tn").textContent=TOKENS[S.tok].name;
 $("#lanes").innerHTML=S.rules.map((r,i)=>`<div class="lane"><div class="lh"><b>${TITLE[r.type]}</b><span>${esc(r.val)}</span></div><div class="trk"><i class="beam"></i><i class="dot"></i><i class="post"></i></div><div class="rs" id="rs${i}">Ready</div></div>`).join("");
-$("#sum").hidden=true;$("#pan").innerHTML=""}
+$("#sum").hidden=true;$("#pan").innerHTML=PH}
 
 function evaluate(){
 const t=TOKENS[S.tok],L=(S.rules.find(r=>r.type==="lockup")||{n:0}).n,base=L+10,cp=S.rules.find(r=>r.type==="cap");
@@ -148,10 +208,10 @@ function summary(){
 const n=S.res.length,held=S.res.filter(o=>!o.hit).length,t=TOKENS[S.tok];
 $("#big").textContent=held===n?`All ${n} promises hold.`:`${held} of ${n} promises held.`;
 $("#sm").textContent=(held===n?"Every attack bounced off.":`The paperwork and the code disagree on ${n-held}. Here is where.`)+(S.ctrl?" A legal transfer still went through.":" The token also blocked a legal transfer.");
-$("#pan").innerHTML=S.res.filter(o=>o.hit).map(o=>`<div class="cc"><div><small>The terms say</small><q>${esc(o.r.clause)}</q></div><div><small>The code does</small><pre>${code(o.r,t)}</pre><p class="why">${esc(o.hit.label)} (${o.hit.via}) went through.</p></div></div>`).join("");
+$("#pan").innerHTML=S.res.filter(o=>o.hit).map(o=>`<div class="cc"><div><small>The terms say</small><q>${esc(o.r.clause)}</q></div><div><small>The code does</small><pre>${code(o.r,t)}</pre><p class="why">${esc(o.hit.label)} (${o.hit.via}) went through.</p></div></div>`).join("")||'<p class="ph">Nothing to show. Every promise held.</p>';
 $("#fix").textContent=S.tok==="A"?"Apply the fix and replay":"Show the broken token again";
-$("#fix").hidden=S.rules===null;$("#sum").hidden=false;
-$("#sum").scrollIntoView({behavior:calm?"auto":"smooth",block:"nearest"})}
+$("#sum").hidden=false;
+if(innerWidth<980)$("#sum").scrollIntoView({behavior:calm?"auto":"smooth",block:"nearest"})}
 
 $("#atk").onclick=attack;
 $("#fix").onclick=()=>{S.tok=S.tok==="A"?"B":"A";attack()};
@@ -159,7 +219,7 @@ $("#own").onclick=()=>{
 const r=extract($("#doc").value);
 if(!r.length){$("#msg").textContent="No testable promises found. Look for a lock-up period, an accredited-only limit, a holder cap or a list of blocked countries.";return}
 $("#msg").textContent="Your terms are tested against the sample token, ART.";
-S.rules=r;S.tok="A";lanes();window.scrollTo({top:0,behavior:calm?"auto":"smooth"});attack()};
+S.rules=r;S.tok="A";lanes();$("#demo").scrollIntoView({behavior:calm?"auto":"smooth"});attack()};
 $("#cp").onclick=async()=>{
 const n=S.res.length,held=S.res.filter(o=>!o.hit).length;
 const txt=[`Tripwire: ${TOKENS[S.tok].name}`,`${held} of ${n} promises held.`,"",...S.res.map(o=>`${TITLE[o.r.type]}: ${o.hit?"BREACHED. "+o.hit.label+" ("+o.hit.via+") went through.":"held"}`),"","Mechanical enforcement test on a simulated token model. Not legal advice."].join("\n");
@@ -167,6 +227,8 @@ let m="Copied";try{await navigator.clipboard.writeText(txt)}catch(e){m="Copy not
 const b=$("#cp"),o=b.textContent;b.textContent=m;setTimeout(()=>b.textContent=o,1800)};
 
 $("#doc").value=SAMPLE;S.rules=extract(SAMPLE);lanes();
-</script>
+
+$("#go").onclick=()=>setTimeout(attack,700);
+const hv=$("#hv");hv.addEventListener("canplay",()=>hv.style.opacity=1);</script>
 </body>
 </html>
