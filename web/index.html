@@ -281,15 +281,16 @@ $("#go").onclick=()=>setTimeout(attack,700);
 const hv=$("#hv");hv.addEventListener("canplay",()=>hv.style.opacity=1);
 
 function renderProbe(d){
-const n=d.checks.length,ok=d.checks.filter(c=>c.verdict.startsWith("consistent")).length,rev=d.checks.filter(c=>/NOT BLOCKED|MISMATCH/.test(c.verdict)).length,good=n>0&&ok===n;
+const ov=d.balanceOverride||{},OUT={success:"Transfer succeeded",returned_false:"Returned false (no revert)",revert_reason:"Reverted with reason",revert_custom_error:"Reverted with custom error",revert_raw_data:"Reverted with raw data",rpc_error:"Not simulated (RPC error)"};
 return `<article class="paper"><div class="priv">Private draft. Share with the issuer first.</div>
 <div class="ph2"><span>Probe report</span><span>${esc(d.symbol||"token")}</span></div>
-<p class="spec">Token: <b>${esc(d.name||"unknown")}</b> · block ${esc(d.block)}</p><p class="spec">${esc(d.token)}</p>
-<div class="vd"><div><small>Result</small><b>${good?"Unknown wallets were blocked":rev?`${rev} of ${n} checks need review`:"Inconclusive"}</b></div><span class="stamp big ${good?"h":"b"}">${good?"Consistent":"Review"}</span></div>
+<p class="spec">Token: <b>${esc(d.name||"unknown")}</b> · block ${esc(d.block)}${d.chainId?" · chain "+esc(d.chainId):""}</p><p class="spec">${esc(d.token)}</p>${d.blockHash?`<p class="spec">block hash ${esc(d.blockHash)}</p>`:""}
+<div class="vd"><div><small>Result</small><b>Observations only. No terms supplied, so no verdict.</b></div></div>
 ${(d.warnings||[]).map(w=>`<p class="why">${esc(w)}</p>`).join("")}
-${d.checks.map((c,i)=>`<div class="ck"><b>Fresh wallet ${i+1}: ${esc(c.recipient)}</b><p>Restriction code: ${c.restrictionCode===null?"n/a":esc(c.restrictionCode)} ${c.restrictionMessage?"("+esc(c.restrictionMessage)+")":""}</p><p>Transfer simulation: ${esc(c.transferSimulation)}</p><p><b style="display:inline">${esc(c.verdict)}</b></p></div>`).join("")}
-${d.restrictionCodes.length?`<p class="why">Restriction codes this token reports: ${d.restrictionCodes.map(c=>esc(c.code+"="+c.message)).join(" · ")}</p>`:'<p class="why">No ERC-1404 restriction codes found. This token may not follow the standard.</p>'}
-<p class="why">Read-only simulation: no transaction was sent. A block does not prove the restriction matches the offering terms, and different causes (whitelist, lock-up) can look the same. Not legal advice.</p></article>`}
+<p class="why">Balance override: ${ov.applied?`applied (${esc(ov.layout)} mapping, slot index ${esc(ov.mappingIndex)}, confirmed by read-back)`:`not applied. ${esc(ov.reason||"")}`}</p>
+${d.checks.map((c,i)=>`<div class="ck"><b>Fresh wallet ${i+1}: ${esc(c.recipient)}</b><p>Outcome: <b style="display:inline">${esc(OUT[c.outcome]||c.outcome)}</b> · state: ${esc(c.stateUsed)}</p><p>Decoded: ${esc(c.transferSimulation)}</p>${c.rawRevertData!==undefined?`<p>Raw revert data: <code style="word-break:break-all">${c.rawRevertData===null?"none returned by the RPC":esc(c.rawRevertData)}</code></p>`:""}${c.decoded&&c.decoded.note?`<p>${esc(c.decoded.note)}</p>`:""}<p>detectTransferRestriction: ${c.detectTransferRestriction.status==="returned"?"returned "+esc(c.detectTransferRestriction.rawReturn)+(c.detectTransferRestriction.message?" ("+esc(c.detectTransferRestriction.message)+")":""):esc(c.detectTransferRestriction.status.replace("_"," "))}</p><p>Code vs simulation: ${esc(c.codeVsSimulation)}</p></div>`).join("")}
+${d.restrictionCodes.length?`<p class="why">Restriction codes this token describes: ${d.restrictionCodes.map(c=>esc(c.code+"="+c.message)).join(" · ")}</p>`:""}
+<p class="why">Read-only simulation: no transaction was sent. This records what the code did at one block. It does not show whether the behaviour matches any offering terms. Not legal advice.</p></article>`}
 async function probeReal(){
 const b=$("#pr-go");b.disabled=true;$("#pr-out").innerHTML='<p class="ph">Running read-only simulations…</p>';
 try{

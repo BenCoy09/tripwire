@@ -1,0 +1,14 @@
+import { execFile } from "node:child_process";
+import { readFileSync } from "node:fs";
+import { start } from "./demo-mock.mjs";
+import { probeToken } from "../probe-core.mjs";
+const srv = await start(8599);
+const args = ["--rpc", "http://127.0.0.1:8599", "--token", "0x1111111111111111111111111111111111111111", "--holder", "0x2222222222222222222222222222222222222222"];
+const cli = await new Promise((r) => execFile("node", ["probe.mjs", ...args], { timeout: 30000 }, (e, so, se) => r(so + se)));
+console.log(cli);
+const d = await probeToken({ rpc: "http://127.0.0.1:8599", token: args[3], holder: args[5] });
+const s = readFileSync("web/index.html", "utf8"), a = s.indexOf("function renderProbe"), b = s.indexOf("async function probeReal");
+const esc = (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const html = new Function("esc", s.slice(a, b) + ";return renderProbe")(esc)(d);
+console.log("UI render ok | raw hex shown:", html.includes("0x08c379a0"), "| verdict wording present:", /ENFORCED|Consistent|NOT BLOCKED|MISMATCH/.test(html));
+srv.close(); process.exit(0);

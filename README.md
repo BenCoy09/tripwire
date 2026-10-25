@@ -47,13 +47,15 @@ It tests mechanical enforcement, not legal sufficiency, and is not legal advice.
 - `run.mjs` attack runner, `make-report.mjs` HTML report, `rules.json` the promises under test
 - `web/index.html` the web demo (static site, deployed on Render)
 
-## Probe a live ERC-1404 token (read-only)
+## Probe a live token (read-only, ERC-1404 not required)
 ```bash
 node probe.mjs --rpc <https RPC url> --token 0xTOKEN --holder 0xSOME_CURRENT_HOLDER
 ```
-Uses `eth_call` simulations only: no transactions, no keys. It asks the token whether an unknown wallet could
-receive tokens, compares the token's own restriction code with a simulated `transfer`, and writes
-`probe-<SYMBOL>.json`. Findings go to the issuer privately first (see `DISCLOSURE.md`).
+Pins one block, overrides the holder's balance in an `eth_call` state override (slot found by trial and proven by
+read-back, otherwise actual state is used and the report says so), simulates `transfer` to three fresh wallets and
+records the outcome: success, revert with reason, revert with custom error, or revert with raw data, always with the raw
+hex. `detectTransferRestriction` is called if present and never required. No transactions, no keys. Observations only: no verdict.
+`npm test` runs the logic tests against a mock node.
 
 ## Wording
 Reports say "enforced" and "not enforced", never "breach", and "All tests passed" instead of "certified".
@@ -68,16 +70,3 @@ node server.mjs          # http://localhost:3000
 The server serves the site and exposes `POST /api/probe`, which runs the read-only ERC-1404 probe for a token
 you paste in. Set `RPC_ETHEREUM`, `RPC_BASE`, `RPC_ARBITRUM` to your own RPC URLs for reliability.
 Deploy on Render as a **Web Service** (build `npm install`, start `node server.mjs`); see `render.yaml`.
-
-## Extractor (step 1 of the product build)
-```bash
-npm run test:extractor                       # 24 checks
-node extractor/extract.mjs memo.txt          # promise objects as JSON
-node extractor/extract.mjs memo.txt --summary
-```
-Memo text in, promise objects out: `id`, the exact `quote` (with character offsets), one of seven fixed categories,
-`parameters` taken from the memo, and `testable` with a `reason` when false. Nothing is defaulted: a promise with
-no extractable parameter is untestable. Dates are worked out from the anchor date the memo states (for example a
-closing date) and the anchor sentence is stored beside the result. `validate.mjs` checks any extractor's output
-(including an LLM's, see `prompt.md`) against the memo: exact quotes only, fixed categories only, numbers and dates
-must follow from the quoted text.
