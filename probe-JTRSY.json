@@ -1,0 +1,173 @@
+{
+  "generatedAt": "2026-10-25T02:45:51.416Z",
+  "token": "0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+  "holder": "0x523DC886302932a469Cd804Cb18292d7D5C30512",
+  "readOnly": true,
+  "chainId": "1",
+  "block": "26266785",
+  "blockHash": "0xa8ca2b4bd66a61bb2447f7d73e0ce39bbc0d0767bc6188ff43eb7b01be596570",
+  "blockTimestamp": "1792896347",
+  "warnings": [],
+  "balanceOverride": {
+    "applied": true,
+    "reason": null,
+    "layout": "solidity",
+    "slot": "0xc6cc184253623b47ebd78dd04cd6d7787b9cee19a18adcb16cd800600717407c",
+    "valueSet": "1000000000000000000000000001",
+    "readBack": "1000000000000000000000000001",
+    "mappingIndex": 7
+  },
+  "restrictionCodes": [
+    {
+      "code": 0,
+      "message": "transfer-allowed"
+    },
+    {
+      "code": 1,
+      "message": "transfer-blocked"
+    },
+    {
+      "code": 2,
+      "message": "transfer-blocked"
+    },
+    {
+      "code": 3,
+      "message": "transfer-blocked"
+    },
+    {
+      "code": 4,
+      "message": "transfer-blocked"
+    },
+    {
+      "code": 5,
+      "message": "transfer-blocked"
+    },
+    {
+      "code": 6,
+      "message": "transfer-blocked"
+    },
+    {
+      "code": 7,
+      "message": "transfer-blocked"
+    },
+    {
+      "code": 8,
+      "message": "transfer-blocked"
+    },
+    {
+      "code": 9,
+      "message": "transfer-blocked"
+    }
+  ],
+  "checks": [
+    {
+      "recipient": "0xDf2bcEf121fFc3f5dedDfcBadE5D620A733B504F",
+      "amount": "1",
+      "stateUsed": "balance overridden",
+      "simulation": {
+        "from": "0x523DC886302932a469Cd804Cb18292d7D5C30512",
+        "to": "0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "data": "0xa9059cbb000000000000000000000000df2bcef121ffc3f5deddfcbade5d620a733b504f0000000000000000000000000000000000000000000000000000000000000001",
+        "block": "26266785",
+        "stateOverride": {
+          "0x8c213ee79581Ff4984583C6a801e5263418C4b86": {
+            "stateDiff": {
+              "0xc6cc184253623b47ebd78dd04cd6d7787b9cee19a18adcb16cd800600717407c": "0x0000000000000000000000000000000000000000033b2e3c9fd0803ce8000001"
+            }
+          }
+        }
+      },
+      "outcome": "revert_raw_data",
+      "rawRevertData": "0xf90e674a",
+      "decoded": {
+        "kind": "unrecognised selector",
+        "selector": "0xf90e674a"
+      },
+      "detectTransferRestriction": {
+        "status": "returned",
+        "code": 1,
+        "rawReturn": "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "rawRevertData": null,
+        "message": "transfer-blocked"
+      },
+      "codeVsSimulation": "agree",
+      "restrictionCode": 1,
+      "restrictionMessage": "transfer-blocked",
+      "transferSimulation": "reverted: 0xf90e674a"
+    },
+    {
+      "recipient": "0x1C5ef76D26F2e63Cd26D43D1A91a1E637AD3D3Ff",
+      "amount": "1",
+      "stateUsed": "balance overridden",
+      "simulation": {
+        "from": "0x523DC886302932a469Cd804Cb18292d7D5C30512",
+        "to": "0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "data": "0xa9059cbb0000000000000000000000001c5ef76d26f2e63cd26d43d1a91a1e637ad3d3ff0000000000000000000000000000000000000000000000000000000000000001",
+        "block": "26266785",
+        "stateOverride": {
+          "0x8c213ee79581Ff4984583C6a801e5263418C4b86": {
+            "stateDiff": {
+              "0xc6cc184253623b47ebd78dd04cd6d7787b9cee19a18adcb16cd800600717407c": "0x0000000000000000000000000000000000000000033b2e3c9fd0803ce8000001"
+            }
+          }
+        }
+      },
+      "outcome": "revert_raw_data",
+      "rawRevertData": "0xf90e674a",
+      "decoded": {
+        "kind": "unrecognised selector",
+        "selector": "0xf90e674a"
+      },
+      "detectTransferRestriction": {
+        "status": "returned",
+        "code": 1,
+        "rawReturn": "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "rawRevertData": null,
+        "message": "transfer-blocked"
+      },
+      "codeVsSimulation": "agree",
+      "restrictionCode": 1,
+      "restrictionMessage": "transfer-blocked",
+      "transferSimulation": "reverted: 0xf90e674a"
+    },
+    {
+      "recipient": "0x50548c144B009777b6e47ae9a7710ABf12ed95e5",
+      "amount": "1",
+      "stateUsed": "balance overridden",
+      "simulation": {
+        "from": "0x523DC886302932a469Cd804Cb18292d7D5C30512",
+        "to": "0x8c213ee79581Ff4984583C6a801e5263418C4b86",
+        "data": "0xa9059cbb00000000000000000000000050548c144b009777b6e47ae9a7710abf12ed95e50000000000000000000000000000000000000000000000000000000000000001",
+        "block": "26266785",
+        "stateOverride": {
+          "0x8c213ee79581Ff4984583C6a801e5263418C4b86": {
+            "stateDiff": {
+              "0xc6cc184253623b47ebd78dd04cd6d7787b9cee19a18adcb16cd800600717407c": "0x0000000000000000000000000000000000000000033b2e3c9fd0803ce8000001"
+            }
+          }
+        }
+      },
+      "outcome": "revert_raw_data",
+      "rawRevertData": "0xf90e674a",
+      "decoded": {
+        "kind": "unrecognised selector",
+        "selector": "0xf90e674a"
+      },
+      "detectTransferRestriction": {
+        "status": "returned",
+        "code": 1,
+        "rawReturn": "0x0000000000000000000000000000000000000000000000000000000000000001",
+        "rawRevertData": null,
+        "message": "transfer-blocked"
+      },
+      "codeVsSimulation": "agree",
+      "restrictionCode": 1,
+      "restrictionMessage": "transfer-blocked",
+      "transferSimulation": "reverted: 0xf90e674a"
+    }
+  ],
+  "name": "Janus Henderson Treasury Fund",
+  "symbol": "JTRSY",
+  "totalSupply": "289484620619421",
+  "holderBalance": "7154319107906"
+}

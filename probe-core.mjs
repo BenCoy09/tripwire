@@ -78,7 +78,8 @@ const simText = (c) => {
   if (c.outcome === "returned_false") return "returned false";
   if (c.outcome === "rpc_error") return "not simulated: " + c.detail;
   const why = c.decoded?.reason ?? c.decoded?.matchesStandardSignature ?? (c.decoded?.kind === "Panic(uint256)" ? "Panic " + c.decoded.code : null);
-  return "reverted: " + (why ?? c.rawRevertData ?? c.detail);
+  if (why) return "reverted: " + why;
+  return c.rawRevertData !== null && c.rawRevertData !== undefined ? "undecoded, raw data below" : c.detail;
 };
 
 export async function probeToken({ rpc: url, token, holder, fetchImpl = fetch }) {
@@ -138,20 +139,22 @@ export async function probeToken({ rpc: url, token, holder, fetchImpl = fetch })
       const r = await call(token, encodeCall(SIG.message, [c]));
       const m = r.result && r.result !== "0x" ? decodeString(r.result) : null;
       if (m === null) break;
-      out.restrictionCodes.push({ code: c, message: m });
+      out.restrictionCodes.push({ code: c, message: m, source: `messageForTransferRestriction(${c}) on the token contract`, rawReturn: r.result });
     }
 
     for (const label of ["a", "b", "c"]) {
       const to = fresh(label), data = encodeCall(SIG.transfer, [to, 1n]);
       const sim = classify(await call(token, data, holder, overrides));
       const d = await call(token, encodeCall(SIG.detect, [holder, to, 1n]), holder);
-      const det = { status: "no_response", code: null, rawReturn: null, rawRevertData: null, message: null };
+      const det = { status: "no_response", code: null, rawReturn: null, rawRevertData: null, message: null, messageSource: null, messageRawReturn: null, label: null };
       if (!d.error && d.result && d.result !== "0x") {
         det.status = "returned"; det.rawReturn = d.result;
         if (/^0x[0-9a-f]{64}$/i.test(d.result)) {
           det.code = Number(BigInt(d.result));
           const m = await call(token, encodeCall(SIG.message, [det.code]));
           det.message = m.result && m.result !== "0x" ? decodeString(m.result) : null;
+          if (det.message !== null) { det.messageSource = `messageForTransferRestriction(${det.code}) on the token contract`; det.messageRawReturn = m.result; det.label = det.message; }
+          else det.label = `code ${det.code} (no description in contract)`; // never mapped by us
         }
       } else if (d.error) { det.status = looksLikeRevert(d.error) ? "reverted" : "rpc_error"; det.rawRevertData = revertDataOf(d.error); }
       let cmp = "not comparable: detectTransferRestriction gave no usable code";

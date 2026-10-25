@@ -16,13 +16,14 @@ console.log(`holder balance (actual): ${d.holderBalance}`);
 const ov = d.balanceOverride;
 console.log(ov.applied ? `balance override: applied (${ov.layout} mapping index ${ov.mappingIndex}, read-back ${ov.readBack})` : `balance override: NOT applied. ${ov.reason}`);
 for (const w of d.warnings) console.log("WARNING: " + w);
-if (d.restrictionCodes.length) console.log("token's own restriction descriptions: " + d.restrictionCodes.map((c) => `${c.code}=${c.message}`).join(" | "));
+if (d.restrictionCodes.length) console.log("descriptions returned by the token's own messageForTransferRestriction: " + d.restrictionCodes.map((c) => `${c.code}=${c.message}`).join(" | "));
 for (const c of d.checks) {
   console.log(`\n  fresh wallet ${c.recipient}  [${c.stateUsed}]\n    outcome: ${c.outcome}\n    decoded: ${c.transferSimulation}`);
   if (c.rawRevertData !== undefined) console.log(`    raw revert data: ${c.rawRevertData === null ? "(none returned by RPC)" : c.rawRevertData}`);
   if (c.detail) console.log(`    note: ${c.detail}`);
   const t = c.detectTransferRestriction;
-  console.log(`    detectTransferRestriction: ${t.status}${t.code !== null ? " code " + t.code : ""}${t.message ? " (" + t.message + ")" : ""}  | vs simulation: ${c.codeVsSimulation}`);
+  console.log(`    detectTransferRestriction: ${t.status}${t.code !== null ? " code " + t.code + " (raw word " + t.rawReturn + ")" : ""}  | vs simulation: ${c.codeVsSimulation}`);
+  if (t.code !== null) console.log(t.message !== null ? `    contract's own ${t.messageSource} returned: "${t.message}"\n      raw return: ${t.messageRawReturn}` : `    ${t.label}`);
 }
 const file = `probe-${d.symbol || "token"}.json`;
 writeFileSync(file, JSON.stringify(d, null, 2));

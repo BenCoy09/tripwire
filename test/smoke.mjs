@@ -10,5 +10,6 @@ const d = await probeToken({ rpc: "http://127.0.0.1:8599", token: args[3], holde
 const s = readFileSync("web/index.html", "utf8"), a = s.indexOf("function renderProbe"), b = s.indexOf("async function probeReal");
 const esc = (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const html = new Function("esc", s.slice(a, b) + ";return renderProbe")(esc)(d);
+console.log(html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 1100));
 console.log("UI render ok | raw hex shown:", html.includes("0x08c379a0"), "| verdict wording present:", /ENFORCED|Consistent|NOT BLOCKED|MISMATCH/.test(html));
 srv.close(); process.exit(0);

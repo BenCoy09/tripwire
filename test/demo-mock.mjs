@@ -12,5 +12,7 @@ export const start = (port) => new Promise((r) => { const srv = createServer((re
   if (sel === selector("name()")) return ok(encStr("MockToken")); if (sel === selector("symbol()")) return ok(encStr("MCK")); if (sel === selector("totalSupply()")) return ok("0x" + w(1000));
   if (sel === selector("balanceOf(address)")) return ok(ovr?.[T]?.stateDiff?.[keccak256("0x" + tx.data.slice(10, 74) + pad32("3"))] ?? "0x" + w(500));
   if (sel === selector("transfer(address,uint256)")) { const d = "0x08c379a0" + encStr("Recipient not whitelisted").slice(2); return er({ code: 3, message: "execution reverted: Recipient not whitelisted", data: d }); }
+  if (sel === selector("detectTransferRestriction(address,address,uint256)")) return ok("0x" + w(1));
+  if (sel === selector("messageForTransferRestriction(uint8)")) return Number(BigInt("0x" + tx.data.slice(10, 74))) === 1 ? ok(encStr("transfer-blocked")) : er({ code: 3, message: "execution reverted", data: "0x" });
   return er({ code: 3, message: "execution reverted", data: "0x" });
 }); }); srv.listen(port, () => r(srv)); });
