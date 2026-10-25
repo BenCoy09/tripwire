@@ -91,6 +91,22 @@ node probe.mjs --verify probe-SYMBOL.json --rpc <archive RPC url>
 It prints MATCH, or DIFFERENT with the sections that differ, and flags a file edited after it was written.
 Old blocks need an archive RPC; the report says so if the RPC cannot serve the block.
 
+## Anchoring a report (testnet)
+Tripwire holds no keys and never sends a transaction. To anchor a report you do it yourself:
+1. In your own wallet on **Base Sepolia** (a test network; the gas is free from a faucet), send a transaction of 0 ETH
+   to your own address with the report's `reportHash` as the hex data.
+2. Check it, either on the page (paste the transaction hash under the report) or with the CLI:
+```bash
+node probe.mjs --verify-anchor probe-SYMBOL.json --tx 0x<transaction hash> --rpc https://sepolia.base.org
+```
+It checks the transaction exists, succeeded, and carries exactly this hash, then prints the network, block, block time,
+sender and a block explorer link. The CLI also checks that the report file still hashes to the hash it states, so an edited
+file fails. The page cannot see the file, so it checks the hash only and says so.
+
+**What it proves, in one sentence:** the transaction proves this report existed at that block time and has not been edited
+since (any edit changes the hash); it does not prove the report is right, and it was sent by the tester, not the issuer.
+It is a testnet anchor: free, but testnet data carries no permanence guarantee. Use a mainnet for a record you must keep.
+
 ## Wording
 Reports say "enforced" and "not enforced", never "breach", and "All tests passed" instead of "certified".
 Findings describe what the code does under test conditions. They are not accusations or legal conclusions.
@@ -101,6 +117,6 @@ Add `--private` to `make-report.mjs` to stamp a report as a private draft for is
 npm install
 node server.mjs          # http://localhost:3000
 ```
-The server serves the site and exposes `POST /api/probe`, which runs the read-only ERC-1404 probe for a token
+The server serves the site and exposes `POST /api/probe`, which runs the read-only probe for any ERC-20 token
 you paste in. Set `RPC_ETHEREUM`, `RPC_BASE`, `RPC_ARBITRUM` to your own RPC URLs for reliability.
 Deploy on Render as a **Web Service** (build `npm install`, start `node server.mjs`); see `render.yaml`.

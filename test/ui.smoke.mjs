@@ -10,5 +10,6 @@ const esc = (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;");
 const html = new Function("esc", s.slice(a, b) + ";return renderProbe")(esc)(d);
 const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
 console.log(d.promises.map((p) => `${p.category}: ${p.verdict} (${p.rule})`).join("\n"));
+console.log("anchor panel rendered:", html.includes('id="an-go"') && html.includes(d.reportHash) && text.includes("Testnet anchor (Base Sepolia)") && text.includes("sent by the tester, not the issuer"));
 console.log("\nrendered ok:", html.length, "chars | has marked source line:", html.includes("&gt;&gt;"), "| has report hash:", html.includes(d.reportHash), "| 'No overall score':", text.includes("No overall score"));
 process.exit(0);

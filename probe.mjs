@@ -1,13 +1,27 @@
 // Tripwire probe CLI (read-only).
 //   node probe.mjs --rpc <url> --token 0x.. --holder 0x.. [--control 0x..] [--block N] [--memo memo.txt]
 //   node probe.mjs --verify probe-SYMBOL.json --rpc <archive url>      re-runs the report from its recorded inputs and compares hashes
+//   node probe.mjs --verify-anchor probe-SYMBOL.json --tx 0x.. --rpc <url of the chain the tx is on>   checks an on-chain anchor transaction
 import { readFileSync, writeFileSync } from "node:fs";
 import { probeToken } from "./probe-core.mjs";
 import { hashReport, diffSections } from "./report-hash.mjs";
+import { verifyReportAnchor, TESTNET_NOTE } from "./anchor.mjs";
 
 const arg = (k) => { const i = process.argv.indexOf("--" + k); return i > -1 ? process.argv[i + 1] : undefined; };
 const rpc = arg("rpc") || process.env.RPC;
-const verifyFile = arg("verify");
+const verifyFile = arg("verify"), anchorFile = arg("verify-anchor"), anchorTx = arg("tx");
+
+if (anchorFile) {
+  if (!rpc || !anchorTx) { console.log("usage: node probe.mjs --verify-anchor report.json --tx 0x<transaction hash> --rpc <url of the chain the transaction is on>"); process.exit(2); }
+  let res;
+  try { res = await verifyReportAnchor({ rpc, report: JSON.parse(readFileSync(anchorFile, "utf8")), txHash: anchorTx, expectChainId: arg("expect-chain") ? Number(arg("expect-chain")) : undefined }); }
+  catch (e) { console.log("Error: " + e.message); process.exit(1); }
+  for (const c of res.checks) console.log(`${c.pass ? "PASS" : "FAIL"}  ${c.name}: ${c.detail}`);
+  const a = res.anchor;
+  if (a) console.log(`\nnetwork:      ${a.network}${a.testnet ? " (testnet)" : ""}\ntransaction:  ${a.txHash}\nblock:        ${a.blockNumber} (${a.confirmations ?? "?"} confirmations)\nblock time:   ${a.blockTimeIso}\nsent by:      ${a.from}${a.explorerUrl ? "\nexplorer:     " + a.explorerUrl : ""}`);
+  console.log(res.ok ? `\nANCHOR VERIFIED. ${res.proves}${res.testnetNote ? "\n" + res.testnetNote : ""}` : "\nANCHOR NOT VERIFIED. See the failed checks above.");
+  process.exit(res.ok ? 0 : 1);
+}
 
 if (verifyFile) {
   if (!rpc) { console.log("usage: node probe.mjs --verify report.json --rpc <archive https url>"); process.exit(2); }
@@ -68,6 +82,7 @@ else {
   for (const u of d.notExtracted || []) console.log(`\n[NOT A PROMISE] "${u.quote}": ${u.note}`);
 }
 console.log(`\nreport hash: ${d.reportHash}\nreproduce:   ${d.reproduce.command}`);
+console.log(`anchor (optional, testnet): from your own wallet on Base Sepolia, send a 0-value transaction with the report hash as its data. Then:\n  node probe.mjs --verify-anchor probe-${d.symbol || "token"}.json --tx 0x<your transaction hash> --rpc https://sepolia.base.org\n  ${TESTNET_NOTE}`);
 const file = `probe-${d.symbol || "token"}.json`;
 writeFileSync(file, JSON.stringify(d, null, 2));
 console.log(`wrote ${file}\nRead-only simulation: no transaction was sent. Share any finding privately with the issuer first.`);

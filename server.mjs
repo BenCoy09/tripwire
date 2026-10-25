@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { extname, join, normalize, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 import { probeToken } from "./probe-core.mjs";
+import { verifyAnchor } from "./anchor.mjs";
 
 const root = join(fileURLToPath(new URL(".", import.meta.url)), "web");
 const CHAINS = {
@@ -11,6 +12,7 @@ const CHAINS = {
   base: process.env.RPC_BASE || "https://mainnet.base.org",
   arbitrum: process.env.RPC_ARBITRUM || "https://arb1.arbitrum.io/rpc",
 };
+const ANCHOR_CHAINS = { "base-sepolia": { rpc: process.env.RPC_BASE_SEPOLIA || "https://sepolia.base.org", chainId: 84532 } };
 const TYPES = { ".html": "text/html; charset=utf-8", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".mp4": "video/mp4", ".svg": "image/svg+xml" };
 const hits = new Map();
 const limited = (ip) => { const now = Date.now(); const a = (hits.get(ip) || []).filter((t) => now - t < 600000); a.push(now); hits.set(ip, a); return a.length > 12; };
@@ -43,6 +45,18 @@ const server = createServer(async (req, res) => {
         ]);
         return send(200, out);
       } catch (e) { return send(400, { error: e.userFacing ? e.message : "The probe could not complete." }); }
+    }
+    if (url.pathname === "/api/anchor" && req.method === "POST") {
+      const ip = String(req.headers["x-forwarded-for"] || req.socket.remoteAddress).split(",")[0].trim();
+      if (limited(ip)) return send(429, { error: "Too many requests from this address. Try again in a few minutes." });
+      let b;
+      try { b = JSON.parse(await readBody(req)); } catch { return send(400, { error: "Bad request." }); }
+      const net = ANCHOR_CHAINS[b.chain];
+      if (!net) return send(400, { error: "Unsupported anchor chain." });
+      try {
+        const res = await verifyAnchor({ rpc: net.rpc, reportHash: String(b.reportHash || ""), testedBlockTimestamp: b.testedBlockTimestamp, txHash: String(b.tx || "").trim(), expectChainId: net.chainId });
+        return send(200, { ...res, reportContentChecked: false });
+      } catch (e) { return send(400, { error: e.userFacing ? e.message : "The anchor check could not complete." }); }
     }
     if (req.method !== "GET" && req.method !== "HEAD") return send(405, { error: "Method not allowed." });
     let p = decodeURIComponent(url.pathname);

@@ -151,7 +151,7 @@ summary{cursor:pointer;font-weight:600}
 <section class="w sec" id="real">
 <p class="k">Live check</p>
 <h2>Test a real token</h2>
-<p class="sub">Paste a token that follows the ERC-1404 standard and an address that currently holds it. Tripwire runs read-only simulations: no transactions and no keys. Reports are private drafts, so send findings to the issuer first.</p>
+<p class="sub">Paste any ERC-20 token and an address that currently holds it. No special standard is needed: Tripwire simulates transfers to fresh wallets and records what the contract does. Read-only simulations: no transactions and no keys. Reports are private drafts, so send findings to the issuer first.</p>
 <div class="rt">
 <div>
 <div class="fld"><label for="pr-chain">Chain</label><select id="pr-chain"><option value="ethereum">Ethereum</option><option value="base">Base</option><option value="arbitrum">Arbitrum</option></select></div>
@@ -310,14 +310,34 @@ ${d.checks.map((c,i)=>`<div class="ck"><b>Fresh wallet ${i+1}: ${esc(c.recipient
 ${d.restrictionCodes.length?`<p class="why">Descriptions returned by the token\u2019s own messageForTransferRestriction: ${d.restrictionCodes.map(c=>esc(c.code+"="+c.message)).join(" · ")}</p>`:""}
 <p class="spec"><b>Report hash</b></p><p class="spec" style="word-break:break-all">${esc(d.reportHash)}</p>
 <p class="why">Reproduce: ${esc(d.reproduce.command)}. The hash covers the block, simulations, raw revert data, memo and verdicts. Re-running the same block with the same memo gives the same hash, or the report says it differs.</p>
-<p class="why">Read-only simulation: no transaction was sent. This records what the code did at one block. Verdicts apply to the tested holder only. Not legal advice.</p></article>`}
+<p class="spec"><b>Anchor this report on a testnet (optional)</b></p>
+<p class="why"><b>Testnet anchor (Base Sepolia).</b> Tripwire holds no keys and sends nothing. To anchor, use your own wallet on Base Sepolia and send a transaction of 0 ETH to your own address with this value in the hex data field:</p>
+<p class="spec" style="word-break:break-all">${esc(d.reportHash)}</p>
+<p class="why">Then paste the transaction hash here and Tripwire will read it back and check it carries this hash.</p>
+<input id="an-tx" placeholder="transaction hash 0x…" autocomplete="off" spellcheck="false" style="width:100%;box-sizing:border-box;margin:8px 0;padding:10px;font:13px 'IBM Plex Mono',monospace;background:#fff;color:#1a1a1a;border:1px solid #8a8066;border-radius:3px">
+<button class="btn alt" id="an-go" type="button">Verify anchor</button>
+<div id="an-out"></div>
+<p class="why">What it proves: the transaction proves this report existed at that block time and has not been edited since (any edit changes the hash); it does not prove the report is right, and it was sent by the tester, not the issuer. Testnet data carries no permanence guarantee.</p>
+<p class="why">Read-only simulation: no transaction was sent by Tripwire. This records what the code did at one block. Verdicts apply to the tested holder only. Not legal advice.</p></article>`}
+function renderAnchor(r){
+const a=r.anchor;
+return `<div class="ck"><b>${r.ok?"ANCHOR VERIFIED":"ANCHOR NOT VERIFIED"}</b>${r.checks.map(c=>`<p>${c.pass?"PASS":"FAIL"} · ${esc(c.name)}: ${esc(c.detail)}</p>`).join("")}${a?`<p>Network: ${esc(a.network)}${a.testnet?" (testnet)":""} · block ${esc(a.blockNumber)} · ${esc(a.confirmations??"?")} confirmations</p><p>Block time: ${esc(a.blockTimeIso)}</p><p>Sent by: <code style="word-break:break-all">${esc(a.from)}</code></p>${a.explorerUrl?`<p><a href="${esc(a.explorerUrl)}" target="_blank" rel="noopener noreferrer">Open the transaction on the block explorer</a></p>`:""}`:""}${r.ok?`<p>${esc(r.proves)}</p>`:""}${r.testnetNote?`<p>${esc(r.testnetNote)}</p>`:""}${r.reportContentChecked===false?'<p class="why">This page checked that the transaction carries the hash above. To also check the report file against its hash, run node probe.mjs --verify-anchor on the saved report.</p>':""}</div>`}
+async function anchorVerify(d){
+const b=$("#an-go"),o=$("#an-out");b.disabled=true;o.innerHTML='<p class="why">Reading the transaction…</p>';
+try{
+const r=await fetch("/api/anchor",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({chain:"base-sepolia",reportHash:d.reportHash,testedBlockTimestamp:d.blockTimestamp,tx:$("#an-tx").value.trim()})});
+let j;try{j=await r.json()}catch{throw new Error("The anchor check is not available on this host.")}
+if(!r.ok)throw new Error(j.error||"The anchor check failed.");
+o.innerHTML=renderAnchor(j)}
+catch(e){o.innerHTML=`<p class="why">${esc(e.message)}</p>`}
+b.disabled=false}
 async function probeReal(){
 const b=$("#pr-go");b.disabled=true;$("#pr-out").innerHTML='<p class="ph">Running read-only simulations…</p>';
 try{
 const r=await fetch("/api/probe",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({chain:$("#pr-chain").value,token:$("#pr-token").value.trim(),holder:$("#pr-holder").value.trim(),control:$("#pr-control").value.trim(),block:$("#pr-block").value.trim(),memo:$("#pr-memo").value})});
 let d;try{d=await r.json()}catch{throw new Error("The live probe is not available on this host.")}
 if(!r.ok)throw new Error(d.error||"The probe failed.");
-$("#pr-out").innerHTML=renderProbe(d)}
+$("#pr-out").innerHTML=renderProbe(d);$("#an-go").onclick=()=>anchorVerify(d)}
 catch(e){$("#pr-out").innerHTML=`<p class="ph">${esc(e.message)}</p>`}
 b.disabled=false}
 $("#pr-go").onclick=probeReal;
