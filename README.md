@@ -57,6 +57,40 @@ records the outcome: success, revert with reason, revert with custom error, or r
 hex. `detectTransferRestriction` is called if present and never required. No transactions, no keys. Observations only: no verdict.
 `npm test` runs the logic tests against a mock node.
 
+## Terms, verdicts, reproducibility (v0.8)
+Paste the offering terms (web box, or `--memo memo.txt`). The extractor pulls out each promise into one of seven fixed
+categories with the exact quoted sentence; a validator rejects anything whose quote is not an exact substring of the memo.
+**No memo means no verdict of any kind**: the report says "No terms supplied" and lists observations only.
+
+One verdict per promise, no score, no grade:
+- **ENFORCED**: a simulation behaved exactly as the memo says AND a control rules out another cause.
+- **NOT_ENFORCED**: a simulation showed the opposite of the memo (or supply above a stated cap).
+- **UNTESTABLE**: this tool cannot build a simulation that exercises the promise.
+- **UNVERIFIABLE**: simulations or evidence exist but cannot settle it either way.
+
+| Category | What is simulated | Can it say ENFORCED? |
+|---|---|---|
+| Transfer restriction | holder to 3 fresh wallets must be blocked, plus a control wallet you supply (`--control`) must succeed | yes, only with the control |
+| Lock-up | same transfer at the block's own clock (must be blocked) and with the clock set one day after the end date (must succeed); clock override is proven first; actual state, no balance override | yes, only if the lock-up was still active at the block |
+| Supply cap | totalSupply vs the memo number | never (above the cap is NOT_ENFORCED; under it is UNVERIFIABLE) |
+| Holder cap, jurisdiction block | nothing | no, UNTESTABLE |
+| Freeze / forced transfer, pause | bytecode selector scan, `paused()` read | no, UNVERIFIABLE |
+
+Each verdict carries the memo quote, test inputs (calldata, state, clock), block number, and where verified source is
+available (Sourcify, no key) the function, file, line range and snippet with the revert line marked. The line is found by
+exact match only: the revert-reason string, or a custom error whose selector matches the verified ABI. If nothing matches, it says so.
+When no revert happened (NOT_ENFORCED), the marked line is the entry point that ran; the tool cannot locate a missing check.
+
+Verdicts apply to the tested holder only. Subgroup promises (insiders, founders...) are never called NOT_ENFORCED from one holder.
+
+**Reproducibility.** Every report records the block, block hash, memo text and a `reportHash` (keccak256 of the canonical
+report minus clock and free-text RPC messages). Re-run exactly:
+```bash
+node probe.mjs --verify probe-SYMBOL.json --rpc <archive RPC url>
+```
+It prints MATCH, or DIFFERENT with the sections that differ, and flags a file edited after it was written.
+Old blocks need an archive RPC; the report says so if the RPC cannot serve the block.
+
 ## Wording
 Reports say "enforced" and "not enforced", never "breach", and "All tests passed" instead of "certified".
 Findings describe what the code does under test conditions. They are not accusations or legal conclusions.

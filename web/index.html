@@ -157,6 +157,9 @@ summary{cursor:pointer;font-weight:600}
 <div class="fld"><label for="pr-chain">Chain</label><select id="pr-chain"><option value="ethereum">Ethereum</option><option value="base">Base</option><option value="arbitrum">Arbitrum</option></select></div>
 <div class="fld"><label for="pr-token">Token address</label><input id="pr-token" placeholder="0x…" autocomplete="off" spellcheck="false"></div>
 <div class="fld"><label for="pr-holder">A current holder address</label><input id="pr-holder" placeholder="0x…" autocomplete="off" spellcheck="false"></div>
+<div class="fld"><label for="pr-control">Control wallet (optional): an address you know is allowed to hold this token, such as another current holder</label><input id="pr-control" placeholder="0x…" autocomplete="off" spellcheck="false"></div>
+<div class="fld"><label for="pr-block">Block number (optional, default latest)</label><input id="pr-block" inputmode="numeric" placeholder="latest" autocomplete="off"></div>
+<div class="fld"><label for="pr-memo">Offering terms (optional). Paste the text. Without it the report has no verdict of any kind.</label><textarea class="doc" id="pr-memo" spellcheck="false" placeholder="Paste the offering terms here"></textarea></div>
 <button class="btn" id="pr-go">Run read-only probe</button>
 <p class="sm">Find a holder on the token’s block explorer, under Holders. Only probe tokens you are authorised to test or that are public and well known, and keep results private.</p>
 </div>
@@ -280,21 +283,38 @@ $("#doc").value=SAMPLE;S.rules=extract(SAMPLE);lanes();
 $("#go").onclick=()=>setTimeout(attack,700);
 const hv=$("#hv");hv.addEventListener("canplay",()=>hv.style.opacity=1);
 
+function renderTests(p){
+return (p.tests||[]).map(t=>`<p><b style="display:inline">Test: ${esc(t.name)}.</b> Expected ${esc(t.expected)}; observed <b style="display:inline">${esc(t.observed.outcome)}</b>${t.observed.rawRevertData?` <code style="word-break:break-all">${esc(t.observed.rawRevertData)}</code>`:""}<br>Inputs: ${t.inputs.recipient?"recipient "+esc(t.inputs.recipient)+", ":""}${t.inputs.stateUsed?"state: "+esc(t.inputs.stateUsed)+", ":""}block ${esc(t.inputs.block)}${t.inputs.blockTimeOverride?", clock set to "+esc(t.inputs.blockTimeOverride):""}${t.inputs.data?`<br>Calldata: <code style="word-break:break-all">${esc(t.inputs.data)}</code>`:""}</p>`).join("")}
+function renderEvidence(p){
+const e=p.evidence;
+if(!e)return `<p>Evidence: none. ${esc(p.evidenceNote||"")}</p>`;
+if(!e.available)return `<p>Evidence: verified source unavailable. ${esc(e.reason)}</p>`;
+if(!e.located)return `<p>Evidence: source found, line not located. ${esc(e.note)}</p>`;
+return `<p>Evidence: ${esc(e.function||"(outside a function)")} in ${esc(e.file)}, lines ${esc(e.startLine)} to ${esc(e.endLine)}. Matched by: ${esc(e.matchedBy)}${e.candidateSites>1?` (${esc(e.candidateSites)} candidate sites, first shown)`:""}</p><pre>${e.snippet.map(l=>{const t=String(l.line).padStart(4)+" | "+esc(l.text);return l.marked?"<b>&gt;&gt; "+t+"</b>":"   "+t}).join("\n")}</pre>${e.truncated?'<p class="why">Snippet truncated.</p>':""}`}
+function renderPromises(d){
+if(d.promises===null)return '<p class="why"><b>No terms supplied.</b> This report lists observations only.</p>';
+return `<p class="why">One verdict per promise. There is no overall score or grade. Memo sha256 ${esc(d.memo.sha256)}.</p>`+d.promises.map(p=>`<div class="ck"><b>[${esc(p.verdict)}] ${esc(p.category.replace(/_/g," "))}</b><p>Memo: &ldquo;${esc(p.quote)}&rdquo;</p><p>${esc(p.reason)}</p><p>${esc(p.scope)}</p>${p.observed&&p.observed.totalSupplyUnits?`<p>Observed supply: ${esc(p.observed.totalSupplyUnits)} tokens (decimals ${esc(p.observed.decimals)})</p>`:""}${p.observed&&p.observed.selectorsChecked?`<p>Selectors checked in bytecode: ${p.observed.selectorsChecked.map(r=>esc(r.signature)+" "+((r.inTokenBytecode||r.inImplementationBytecode)?"found":"not found")).join("; ")}</p>`:""}<p>Block ${esc(p.block)} · rule ${esc(p.rule)}</p>${renderTests(p)}${renderEvidence(p)}</div>`).join("")
++(d.rejectedPromises||[]).map(x=>`<div class="ck"><b>[REJECTED BY VALIDATOR]</b><p>&ldquo;${esc(x.quote)}&rdquo;</p><p>${esc(x.problems.join("; "))}</p></div>`).join("")
++(d.notExtracted||[]).map(u=>`<div class="ck"><b>[NOT TURNED INTO A PROMISE]</b><p>&ldquo;${esc(u.quote)}&rdquo;</p><p>${esc(u.note)}</p></div>`).join("")}
 function renderProbe(d){
 const ov=d.balanceOverride||{},OUT={success:"Transfer succeeded",returned_false:"Returned false (no revert)",revert_reason:"Reverted with reason",revert_custom_error:"Reverted with custom error",revert_raw_data:"Reverted with raw data",rpc_error:"Not simulated (RPC error)"};
 return `<article class="paper"><div class="priv">Private draft. Share with the issuer first.</div>
 <div class="ph2"><span>Probe report</span><span>${esc(d.symbol||"token")}</span></div>
 <p class="spec">Token: <b>${esc(d.name||"unknown")}</b> · block ${esc(d.block)}${d.chainId?" · chain "+esc(d.chainId):""}</p><p class="spec">${esc(d.token)}</p>${d.blockHash?`<p class="spec">block hash ${esc(d.blockHash)}</p>`:""}
-<div class="vd"><div><small>Result</small><b>Observations only. No terms supplied, so no verdict.</b></div></div>
+<div class="vd"><div><small>Result</small><b>${d.promises===null?"Observations only. No terms supplied, so no verdict.":"Terms supplied. Verdicts are per promise below. No overall score."}</b></div></div>
+${renderPromises(d)}
+<p class="spec"><b>Observations</b></p>
 ${(d.warnings||[]).map(w=>`<p class="why">${esc(w)}</p>`).join("")}
-<p class="why">Balance override: ${ov.applied?`applied (${esc(ov.layout)} mapping, slot index ${esc(ov.mappingIndex)}, confirmed by read-back)`:`not applied. ${esc(ov.reason||"")}`}</p>
+<p class="why">Balance override: ${ov.applied?`applied (${esc(ov.layout)} mapping, slot index ${esc(ov.mappingIndex)}, confirmed by read-back)`:`not applied. ${esc(ov.reason||"")} ${esc(ov.detail||"")}`}</p>
 ${d.checks.map((c,i)=>`<div class="ck"><b>Fresh wallet ${i+1}: ${esc(c.recipient)}</b><p>Outcome: <b style="display:inline">${esc(OUT[c.outcome]||c.outcome)}</b> · state: ${esc(c.stateUsed)}</p><p>Decoded: ${esc(c.transferSimulation)}</p>${c.rawRevertData!==undefined?`<p>Raw revert data: <code style="word-break:break-all">${c.rawRevertData===null?"none returned by the RPC":esc(c.rawRevertData)}</code></p>`:""}${c.decoded&&c.decoded.note?`<p>${esc(c.decoded.note)}</p>`:""}<p>detectTransferRestriction: ${(t=>t.status==="returned"?(t.code===null?"returned "+esc(t.rawReturn)+" (not a single code word)":`code ${esc(t.code)}, raw word <code style="word-break:break-all">${esc(t.rawReturn)}</code>`):esc(t.status.replace("_"," ")))(c.detectTransferRestriction)}</p>${c.detectTransferRestriction.code!==null?(c.detectTransferRestriction.message!==null?`<p>The contract's own messageForTransferRestriction(${esc(c.detectTransferRestriction.code)}) returned: &ldquo;${esc(c.detectTransferRestriction.message)}&rdquo;<br><code style="word-break:break-all">${esc(c.detectTransferRestriction.messageRawReturn)}</code></p>`:`<p>${esc(c.detectTransferRestriction.label)}</p>`):""}<p>Code vs simulation: ${esc(c.codeVsSimulation)}</p></div>`).join("")}
 ${d.restrictionCodes.length?`<p class="why">Descriptions returned by the token\u2019s own messageForTransferRestriction: ${d.restrictionCodes.map(c=>esc(c.code+"="+c.message)).join(" · ")}</p>`:""}
-<p class="why">Read-only simulation: no transaction was sent. This records what the code did at one block. It does not show whether the behaviour matches any offering terms. Not legal advice.</p></article>`}
+<p class="spec"><b>Report hash</b></p><p class="spec" style="word-break:break-all">${esc(d.reportHash)}</p>
+<p class="why">Reproduce: ${esc(d.reproduce.command)}. The hash covers the block, simulations, raw revert data, memo and verdicts. Re-running the same block with the same memo gives the same hash, or the report says it differs.</p>
+<p class="why">Read-only simulation: no transaction was sent. This records what the code did at one block. Verdicts apply to the tested holder only. Not legal advice.</p></article>`}
 async function probeReal(){
 const b=$("#pr-go");b.disabled=true;$("#pr-out").innerHTML='<p class="ph">Running read-only simulations…</p>';
 try{
-const r=await fetch("/api/probe",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({chain:$("#pr-chain").value,token:$("#pr-token").value.trim(),holder:$("#pr-holder").value.trim()})});
+const r=await fetch("/api/probe",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({chain:$("#pr-chain").value,token:$("#pr-token").value.trim(),holder:$("#pr-holder").value.trim(),control:$("#pr-control").value.trim(),block:$("#pr-block").value.trim(),memo:$("#pr-memo").value})});
 let d;try{d=await r.json()}catch{throw new Error("The live probe is not available on this host.")}
 if(!r.ok)throw new Error(d.error||"The probe failed.");
 $("#pr-out").innerHTML=renderProbe(d)}

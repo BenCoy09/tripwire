@@ -8,7 +8,9 @@
     "report": "node make-report.mjs report-deployed.json && node make-report.mjs report-patched.json",
     "probe": "node probe.mjs",
     "start": "node server.mjs",
-    "test": "node test/evm-lite.test.mjs && node test/probe.test.mjs"
+    "test": "node test/evm-lite.test.mjs && node test/probe.test.mjs && node test/verdicts.test.mjs && node test/source.test.mjs && node test/cli.test.mjs && node extractor/test.mjs",
+    "extract": "node extractor/extract.mjs",
+    "test:extractor": "node extractor/test.mjs"
   },
   "dependencies": {
     "viem": "^2.21.0"

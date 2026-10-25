@@ -1,0 +1,14 @@
+import { readFileSync } from "node:fs";
+import { probeToken } from "../probe-core.mjs";
+import { startMock, TOKEN, HOLDER, CONTROL, TRUE, customErr } from "./mock-node.mjs";
+const m = await startMock({ transfer: ({ to }) => (to.toLowerCase() === CONTROL ? { ok: TRUE } : { revert: customErr }) });
+const src = async (u) => (u.includes("/v2/") ? { ok: true, json: async () => ({ sources: { "T.sol": { content: "contract T {\n error TransferNotAllowed(address to);\n function transfer(address to, uint256 a) public returns (bool) {\n  if (!ok[to]) revert TransferNotAllowed(to);\n  return true;\n }\n}\n" } }, abi: [{ type: "error", name: "TransferNotAllowed", inputs: [{ type: "address" }] }] }) } : { ok: false, status: 404 });
+const memo = readFileSync(new URL("../extractor/fixtures/saft-style.txt", import.meta.url), "utf8");
+const d = await probeToken({ rpc: m.url, token: TOKEN, holder: HOLDER, control: CONTROL, memo, sourceFetchImpl: src }); m.close();
+const s = readFileSync(new URL("../web/index.html", import.meta.url), "utf8"), a = s.indexOf("function renderTests"), b = s.indexOf("async function probeReal");
+const esc = (x) => String(x).replace(/&/g, "&amp;").replace(/</g, "&lt;");
+const html = new Function("esc", s.slice(a, b) + ";return renderProbe")(esc)(d);
+const text = html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+console.log(d.promises.map((p) => `${p.category}: ${p.verdict} (${p.rule})`).join("\n"));
+console.log("\nrendered ok:", html.length, "chars | has marked source line:", html.includes("&gt;&gt;"), "| has report hash:", html.includes(d.reportHash), "| 'No overall score':", text.includes("No overall score"));
+process.exit(0);

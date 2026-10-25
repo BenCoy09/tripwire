@@ -16,7 +16,7 @@ const hits = new Map();
 const limited = (ip) => { const now = Date.now(); const a = (hits.get(ip) || []).filter((t) => now - t < 600000); a.push(now); hits.set(ip, a); return a.length > 12; };
 const readBody = (req) => new Promise((resolve, reject) => {
   let s = "";
-  req.on("data", (c) => { s += c; if (s.length > 4096) { reject(new Error("too large")); req.destroy(); } });
+  req.on("data", (c) => { s += c; if (s.length > 64000) { reject(new Error("too large")); req.destroy(); } });
   req.on("end", () => resolve(s));
   req.on("error", reject);
 });
@@ -38,8 +38,8 @@ const server = createServer(async (req, res) => {
       if (!rpc) return send(400, { error: "Unsupported chain." });
       try {
         const out = await Promise.race([
-          probeToken({ rpc, token: String(b.token || ""), holder: String(b.holder || "") }),
-          new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error("The probe timed out. Try again."), { userFacing: true })), 30000)),
+          probeToken({ rpc, token: String(b.token || ""), holder: String(b.holder || ""), control: b.control ? String(b.control) : undefined, block: b.block ? String(b.block) : undefined, memo: b.memo ? String(b.memo) : "" }),
+          new Promise((_, rej) => setTimeout(() => rej(Object.assign(new Error("The probe timed out. Try again."), { userFacing: true })), 120000)),
         ]);
         return send(200, out);
       } catch (e) { return send(400, { error: e.userFacing ? e.message : "The probe could not complete." }); }

@@ -1,6 +1,11 @@
 // Tripwire probe core (step 1): behavioural, READ-ONLY probe. eth_call simulations only: no keys, no transactions.
 // Pinned to one block. Does not require ERC-1404: it records what a transfer to a fresh wallet actually does.
 import { keccak256, selector, encodeCall, decodeStatic, decodeString, pad32, toChecksum, isAddress, strip } from "./evm-lite.mjs";
+import { extractPromises } from "./extractor/extract.mjs";
+import { validatePromises } from "./extractor/validate.mjs";
+import { evaluate } from "./verdicts.mjs";
+import { resolveImplementation, fetchVerifiedSource } from "./source.mjs";
+import { hashReport } from "./report-hash.mjs";
 
 const fail = (m) => Object.assign(new Error(m), { userFacing: true });
 const clean = (s) => String(s || "").split("\n")[0].replace(/https?:\/\/\S+/g, "[url]").slice(0, 200);
@@ -82,18 +87,28 @@ const simText = (c) => {
   return c.rawRevertData !== null && c.rawRevertData !== undefined ? "undecoded, raw data below" : c.detail;
 };
 
-export async function probeToken({ rpc: url, token, holder, fetchImpl = fetch }) {
+const MEMO_LIMIT = 20000;
+export async function probeToken({ rpc: url, token, holder, control, block, memo, fetchImpl = fetch, sourceFetchImpl = fetchImpl }) {
   if (!isAddress(token || "") || !isAddress(holder || "")) throw fail("Enter a valid token address and holder address (0x followed by 40 characters).");
   token = toChecksum(token); holder = toChecksum(holder);
+  if (control) { if (!isAddress(control)) throw fail("The control address is not a valid address."); control = toChecksum(control); if (control === holder) throw fail("The control address must differ from the holder address."); } else control = null;
+  if (block !== undefined && block !== null && block !== "" && !/^\d{1,12}$/.test(String(block))) throw fail("Block must be a whole number.");
+  memo = memo == null ? "" : String(memo);
+  if (memo.length > MEMO_LIMIT) throw fail(`The terms are longer than ${MEMO_LIMIT} characters.`);
+  const hasMemo = memo.trim().length > 0;
   const rpc = makeRpc(url, fetchImpl);
   try {
     // Pin everything to one block
-    const bn = await rpc("eth_blockNumber", []);
-    if (bn.error) throw fail("The chain connection is unavailable right now. Try again shortly.");
-    const tag = bn.result;
-    const blk = (await rpc("eth_getBlockByNumber", [tag, false])).result || {};
+    const pinned = block !== undefined && block !== null && block !== "";
+    let tag;
+    if (pinned) tag = "0x" + BigInt(block).toString(16);
+    else { const bn = await rpc("eth_blockNumber", []); if (bn.error) throw fail("The chain connection is unavailable right now. Try again shortly."); tag = bn.result; }
+    const blkRes = await rpc("eth_getBlockByNumber", [tag, false]);
+    if (pinned && (blkRes.error || !blkRes.result)) throw fail(`Block ${block} is not available from this RPC. Older blocks need an archive node.`);
+    const blk = blkRes.result || {};
     const chainId = (await rpc("eth_chainId", [])).result || null;
     const code = await rpc("eth_getCode", [token, tag]);
+    if (pinned && code.error) throw fail(`This RPC could not serve state at block ${block}. Older blocks need an archive node.`);
     if (code.error || !code.result || code.result === "0x") throw fail("No contract found at this address on this chain. Check that the chain and the address match.");
 
     const out = {
@@ -102,7 +117,7 @@ export async function probeToken({ rpc: url, token, holder, fetchImpl = fetch })
       block: String(parseInt(tag, 16)), blockHash: blk.hash || null, blockTimestamp: blk.timestamp ? String(parseInt(blk.timestamp, 16)) : null,
       warnings: [], balanceOverride: null, restrictionCodes: [], checks: [],
     };
-    const call = (to, data, from, overrides) => rpc("eth_call", [{ ...(from ? { from } : {}), to, data }, tag, ...(overrides ? [overrides] : [])]);
+    const call = (to, data, from, overrides, blockOv) => rpc("eth_call", [{ ...(from ? { from } : {}), to, data }, tag, ...(overrides || blockOv ? [overrides || {}] : []), ...(blockOv ? [blockOv] : [])]);
     const str = async (fn) => { const r = await call(token, selector(fn)); return r.result && r.result !== "0x" ? decodeString(r.result) : null; };
     out.name = await str("name()"); out.symbol = await str("symbol()");
     const ts = await call(token, selector("totalSupply()")); out.totalSupply = ts.result && ts.result !== "0x" ? BigInt(ts.result).toString() : null;
@@ -119,7 +134,7 @@ export async function probeToken({ rpc: url, token, holder, fetchImpl = fetch })
         const value = "0x" + OVERRIDE_VALUE.toString(16).padStart(64, "0");
         const ovr = { [token]: { stateDiff: { [key]: value } } };
         const r = await call(token, encodeCall(SIG.balanceOf, [holder]), null, ovr);
-        if (r.error) { ov.reason = "The RPC rejected or failed an eth_call with a state override: " + clean(r.error.message); break search; }
+        if (r.error) { ov.reason = "The RPC rejected or failed an eth_call with a state override."; ov.detail = clean(r.error.message); break search; }
         if (r.result && r.result !== "0x" && BigInt(r.result) === OVERRIDE_VALUE) {
           Object.assign(ov, { applied: true, layout, slot: key, valueSet: OVERRIDE_VALUE.toString(), readBack: BigInt(r.result).toString(), mappingIndex: i });
           overrides = ovr; break search;
@@ -130,7 +145,7 @@ export async function probeToken({ rpc: url, token, holder, fetchImpl = fetch })
     out.balanceOverride = ov;
     const stateUsed = ov.applied ? "balance overridden" : "actual on-chain state";
     if (!ov.applied) {
-      out.warnings.push("Balance override not applied. " + ov.reason + " Simulations ran against the holder's actual state.");
+      out.warnings.push("Balance override not applied. " + ov.reason + (ov.detail ? " " + ov.detail : "") + " Simulations ran against the holder's actual state.");
       if (!realBalance) out.warnings.push("The holder has no readable tokens in actual state, so these simulations may revert for balance reasons.");
     }
 
@@ -170,6 +185,39 @@ export async function probeToken({ rpc: url, token, holder, fetchImpl = fetch })
         restrictionCode: det.code, restrictionMessage: det.message, transferSimulation: simText(sim),
       });
     }
+
+    // ---- terms (steps 3 to 5) ----
+    out.control = control;
+    const memoInfo = { supplied: hasMemo, length: memo.length };
+    if (!hasMemo) {
+      out.terms = "No terms supplied";
+      out.promises = null; // no memo: no verdict of any kind, observations only
+      out.memo = memoInfo;
+    } else {
+      const ex = extractPromises(memo), problems = validatePromises(memo, ex.promises);
+      const bad = new Set(problems.map((p) => p.id));
+      const good = ex.promises.filter((x) => !bad.has(x.id));
+      Object.assign(memoInfo, { text: memo, sha256: ex.memoSha256, extractorVersion: ex.extractorVersion });
+      out.memo = memoInfo; out.terms = "Terms supplied";
+      out.rejectedPromises = ex.promises.filter((x) => bad.has(x.id)).map((x) => ({ id: x.id, quote: x.quote, problems: problems.filter((p) => p.id === x.id).map((p) => p.problem) }));
+      out.notExtracted = ex.unclassified;
+      const impl = await resolveImplementation(rpc, token, tag);
+      const implCode = impl ? (await rpc("eth_getCode", [impl, tag])).result || null : null;
+      out.proxy = impl ? { implementation: impl, standard: "EIP-1967 implementation slot" } : null;
+      let srcCache = null;
+      const ctx = {
+        out, call, classify, fresh, holder, token, control, overrides, realBalance, codes: { token: code.result, impl: implCode },
+        getSource: () => (srcCache ||= fetchVerifiedSource({ chainId: out.chainId, address: impl || token, fetchImpl: sourceFetchImpl })),
+      };
+      out.promises = await evaluate(good, ctx);
+      const src = await ctx.getSource().catch(() => null);
+      out.source = src ? (src.status === "found" ? { status: "found", via: src.via, address: src.address, contentHash: src.contentHash } : { status: "unavailable", reason: src.reason }) : null;
+    }
+    out.reproduce = {
+      chainId: out.chainId, block: out.block, blockHash: out.blockHash, token, holder, control, memoSha256: memoInfo.sha256 || null,
+      command: `node probe.mjs --rpc <${pinned ? "" : "archive "}RPC url> --token ${token} --holder ${holder}${control ? " --control " + control : ""} --block ${out.block}${hasMemo ? " --memo <memo.txt>" : ""}`,
+    };
+    out.reportHash = hashReport(out);
     return out;
   } catch (e) {
     if (e.userFacing) throw e;
