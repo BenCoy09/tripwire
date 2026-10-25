@@ -115,6 +115,16 @@ import { readFileSync } from "node:fs";
   assert.ok(!Object.keys(d).some((k) => /score|grade|overall|summary|tally|rating/i.test(k)), "no aggregate field on the report");
   assert.ok(Array.isArray(d.notExtracted)); console.log("ok messy fixture: " + d.promises.map((p) => p.verdict[0] + p.verdict.slice(1, 3)).join(" ")); }
 
+// --- terms that state no testable promise (as in the live OUSG run): zero verdicts, and the page must say so plainly
+{ const memo = '"Any investor eligible to invest in any of our Qualified Access Funds (and who has completed onboarding) may invest in OUSG." and "OUSG tokens may be freely transferred between any investors that have already onboarded to our Qualified Access Funds."';
+  const d = await run({ transfer: () => ({ revert: errStr("CashKYCSenderReceiver: `to` address must be KYC'd to receive tokens") }), rejectOverride: true }, { memo });
+  assert.deepEqual(d.promises, []); assert.equal(d.notExtracted.length, 1); assert.equal(d.terms, "Terms supplied"); assert.equal(d.checks[0].outcome, "revert_reason");
+  const html = readFileSync(new URL("../web/index.html", import.meta.url), "utf8"), a = html.indexOf("function renderTests"), b = html.indexOf("async function probeReal");
+  const page = new Function("esc", html.slice(a, b) + ";return renderProbe")((x) => String(x))(d), text = page.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ");
+  assert.ok(text.includes("no sentence in them became a testable promise. No verdict.")); assert.ok(!text.includes("Verdicts are per promise below")); assert.ok(text.includes("No promises were extracted"));
+  assert.equal((text.match(/Balance override not applied/g) || []).length, 0, "override message must not be shown twice"); assert.equal((text.match(/not applied\./g) || []).length, 1);
+  console.log("ok terms with no testable promise: zero verdicts, page says so, override note not duplicated"); }
+
 // --- reproducibility
 { const cfg = () => ({ transfer: ({ to }) => (isCtl(to) ? { ok: TRUE } : { revert: customErr }), pinned: 14 });
   const a = await run(cfg(), { memo: TR_MEMO, control: CONTROL, block: "14" }); await new Promise((r) => setTimeout(r, 1100));

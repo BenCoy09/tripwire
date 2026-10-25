@@ -54,7 +54,7 @@ console.log(`\nTripwire probe (read-only) | ${d.name || "unnamed"} (${d.symbol |
 console.log(`holder balance (actual): ${d.holderBalance}`);
 const ov = d.balanceOverride;
 console.log(ov.applied ? `balance override: applied (${ov.layout} mapping index ${ov.mappingIndex}, read-back ${ov.readBack})` : `balance override: NOT applied. ${ov.reason}${ov.detail ? " " + ov.detail : ""}`);
-for (const w of d.warnings) console.log("WARNING: " + w);
+for (const w of d.warnings.filter((x) => !x.startsWith("Balance override not applied"))) console.log("WARNING: " + w);
 if (d.restrictionCodes.length) console.log("descriptions returned by the token's own messageForTransferRestriction: " + d.restrictionCodes.map((c) => `${c.code}=${c.message}`).join(" | "));
 for (const c of d.checks) {
   console.log(`\n  fresh wallet ${c.recipient}  [${c.stateUsed}]\n    outcome: ${c.outcome}\n    decoded: ${c.transferSimulation}`);
@@ -67,7 +67,7 @@ for (const c of d.checks) {
 console.log("\n" + "=".repeat(72));
 if (d.promises === null) console.log("No terms supplied. Observations only; no verdict of any kind.");
 else {
-  console.log(`Terms supplied (memo sha256 ${d.memo.sha256}). One verdict per promise; no overall score.`);
+  console.log(d.promises.length === 0 ? `Terms supplied (memo sha256 ${d.memo.sha256}), but no sentence in them became a testable promise. No verdict. The observations above were not judged against the terms.` : `Terms supplied (memo sha256 ${d.memo.sha256}). One verdict per promise; no overall score.`);
   for (const p of d.promises) {
     console.log(`\n[${p.verdict}] ${p.category}  (${p.id}, rule ${p.rule})\n  memo: "${p.quote}"\n  why:  ${p.reason}\n  scope: ${p.scope}`);
     for (const t of p.tests) console.log(`  test: ${t.name} -> expected ${t.expected}; observed ${t.observed.outcome}${t.observed.rawRevertData ? " " + t.observed.rawRevertData : ""}\n        inputs: recipient ${t.inputs.recipient ?? "-"}, state ${t.inputs.stateUsed ?? "-"}, block ${t.inputs.block}${t.inputs.blockTimeOverride ? ", clock " + t.inputs.blockTimeOverride : ""}`);
