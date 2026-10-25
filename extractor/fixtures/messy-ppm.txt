@@ -1,0 +1,15 @@
+Private Placement Memorandum (synthetic excerpt written to stress the extractor)
+
+Issue Date: January 31, 2026
+
+1. Holders may not sell or transfer tokens until the first anniversary of the Issue Date.
+2. After the lock-up, no more than one-third of a holder's tokens may be sold between the 366th and 455th day after the Issue Date.
+3. Insiders are locked up for one month after the Issue Date.
+4. The Issuer will keep the number of holders of record at fewer than 2,000.
+5. Any transfer requires the prior written consent of the Transfer Agent.
+6. The Transfer Agent reserves the right to freeze any wallet or to force the transfer of tokens pursuant to a court order.
+7. Tokens are intended to be a long-term investment and are subject to restrictions on transfer.
+8. The token supply is fixed at 20,000,000 tokens.
+9. Tokens are not available to persons located in Cuba, Russia, Belarus or the Crimea region.
+10. The Issuer may suspend transfers at any time.
+11. The Issuer values transparency and will publish quarterly reports.

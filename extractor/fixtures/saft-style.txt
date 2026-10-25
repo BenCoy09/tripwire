@@ -1,0 +1,10 @@
+Summary of Terms: Example Protocol Token Sale (synthetic, modelled on common SAFT-style clauses)
+
+The Initial Closing occurred on March 15, 2026.
+
+Purchased tokens are non-transferable for twelve (12) months following the Initial Closing.
+All lock-up restrictions will be enforced by smart contract.
+Tokens may be transferred only to accredited investors who have been approved in writing by the Company.
+The Company will not issue more than two million (2,000,000) tokens.
+Tokens may not be offered or sold to U.S. persons.
+The Company may, in its sole discretion, pause all token transfers in the event of a security incident.

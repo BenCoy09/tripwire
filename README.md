@@ -68,3 +68,16 @@ node server.mjs          # http://localhost:3000
 The server serves the site and exposes `POST /api/probe`, which runs the read-only ERC-1404 probe for a token
 you paste in. Set `RPC_ETHEREUM`, `RPC_BASE`, `RPC_ARBITRUM` to your own RPC URLs for reliability.
 Deploy on Render as a **Web Service** (build `npm install`, start `node server.mjs`); see `render.yaml`.
+
+## Extractor (step 1 of the product build)
+```bash
+npm run test:extractor                       # 24 checks
+node extractor/extract.mjs memo.txt          # promise objects as JSON
+node extractor/extract.mjs memo.txt --summary
+```
+Memo text in, promise objects out: `id`, the exact `quote` (with character offsets), one of seven fixed categories,
+`parameters` taken from the memo, and `testable` with a `reason` when false. Nothing is defaulted: a promise with
+no extractable parameter is untestable. Dates are worked out from the anchor date the memo states (for example a
+closing date) and the anchor sentence is stored beside the result. `validate.mjs` checks any extractor's output
+(including an LLM's, see `prompt.md`) against the memo: exact quotes only, fixed categories only, numbers and dates
+must follow from the quoted text.
