@@ -131,6 +131,8 @@ import { readFileSync } from "node:fs";
   const b = await run(cfg(), { memo: TR_MEMO, control: CONTROL, block: "14" });
   assert.notEqual(a.generatedAt, b.generatedAt); assert.equal(a.reportHash, b.reportHash); assert.equal(a.reportHash, hashReport(a)); assert.equal(a.block, "14");
   assert.match(a.reproduce.command, /--block 14/); assert.equal(a.reproduce.blockHash, a.blockHash);
+  const latest = await run(cfg(), { memo: TR_MEMO, control: CONTROL }); assert.equal(latest.block, "14");
+  assert.equal(latest.reportHash, a.reportHash, "a run at 'latest' must be reproducible by re-running its block (this is what --verify does)");
   const c = await run(cfg(), { memo: TR_MEMO + " ", control: CONTROL, block: "14" }); assert.notEqual(c.reportHash, a.reportHash, "different memo text must change the hash");
   const e = await run({ ...cfg(), transfer: () => ({ ok: TRUE }) }, { memo: TR_MEMO, control: CONTROL, block: "14" }); assert.notEqual(e.reportHash, a.reportHash, "different behaviour must change the hash");
   const t = JSON.parse(JSON.stringify(a)); t.promises[0].verdict = "NOT_ENFORCED"; assert.notEqual(hashReport(t), a.reportHash, "editing a verdict breaks the hash");

@@ -93,8 +93,8 @@ Old blocks need an archive RPC; the report says so if the RPC cannot serve the b
 
 ## Anchoring a report (testnet)
 Tripwire holds no keys and never sends a transaction. To anchor a report you do it yourself:
-1. In your own wallet on **Base Sepolia** (a test network; the gas is free from a faucet), send a transaction of 0 ETH
-   to your own address with the report's `reportHash` as the hex data.
+1. In your own wallet on **Base Sepolia** (a test network; the gas is free from a faucet), send a transaction of 0 ETH with the report's `reportHash` as the hex data, to any address that is not one of your own
+   wallet accounts (for example the burn address `0x000000000000000000000000000000000000dEaD`; MetaMask refuses data on transactions to your own accounts).
 2. Check it, either on the page (paste the transaction hash under the report) or with the CLI:
 ```bash
 node probe.mjs --verify-anchor probe-SYMBOL.json --tx 0x<transaction hash> --rpc https://sepolia.base.org

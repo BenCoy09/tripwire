@@ -215,7 +215,7 @@ export async function probeToken({ rpc: url, token, holder, control, block, memo
     }
     out.reproduce = {
       chainId: out.chainId, block: out.block, blockHash: out.blockHash, token, holder, control, memoSha256: memoInfo.sha256 || null,
-      command: `node probe.mjs --rpc <${pinned ? "" : "archive "}RPC url> --token ${token} --holder ${holder}${control ? " --control " + control : ""} --block ${out.block}${hasMemo ? " --memo <memo.txt>" : ""}`,
+      command: `node probe.mjs --rpc <archive RPC url> --token ${token} --holder ${holder}${control ? " --control " + control : ""} --block ${out.block}${hasMemo ? " --memo <memo.txt>" : ""}`,
     };
     out.reportHash = hashReport(out);
     return out;

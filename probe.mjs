@@ -82,7 +82,7 @@ else {
   for (const u of d.notExtracted || []) console.log(`\n[NOT A PROMISE] "${u.quote}": ${u.note}`);
 }
 console.log(`\nreport hash: ${d.reportHash}\nreproduce:   ${d.reproduce.command}`);
-console.log(`anchor (optional, testnet): from your own wallet on Base Sepolia, send a 0-value transaction with the report hash as its data. Then:\n  node probe.mjs --verify-anchor probe-${d.symbol || "token"}.json --tx 0x<your transaction hash> --rpc https://sepolia.base.org\n  ${TESTNET_NOTE}`);
+console.log(`anchor (optional, testnet): from your own wallet on Base Sepolia, send a 0-value transaction with the report hash as its data, to an address that is not one of your own accounts (for example 0x000000000000000000000000000000000000dEaD). Then:\n  node probe.mjs --verify-anchor probe-${d.symbol || "token"}.json --tx 0x<your transaction hash> --rpc https://sepolia.base.org\n  ${TESTNET_NOTE}`);
 const file = `probe-${d.symbol || "token"}.json`;
 writeFileSync(file, JSON.stringify(d, null, 2));
 console.log(`wrote ${file}\nRead-only simulation: no transaction was sent. Share any finding privately with the issuer first.`);

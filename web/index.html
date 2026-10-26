@@ -311,7 +311,7 @@ ${d.restrictionCodes.length?`<p class="why">Descriptions returned by the token\u
 <p class="spec"><b>Report hash</b></p><p class="spec" style="word-break:break-all">${esc(d.reportHash)}</p>
 <p class="why">Reproduce: ${esc(d.reproduce.command)}. The hash covers the block, simulations, raw revert data, memo and verdicts. Re-running the same block with the same memo gives the same hash, or the report says it differs.</p>
 <p class="spec"><b>Anchor this report on a testnet (optional)</b></p>
-<p class="why"><b>Testnet anchor (Base Sepolia).</b> Tripwire holds no keys and sends nothing. To anchor, use your own wallet on Base Sepolia and send a transaction of 0 ETH to your own address with this value in the hex data field:</p>
+<p class="why"><b>Testnet anchor (Base Sepolia).</b> Tripwire holds no keys and sends nothing. To anchor, use your own wallet on Base Sepolia and send a transaction of 0 ETH with this value in the hex data field. Send it to any address that is not one of your own wallet accounts, such as the burn address 0x000000000000000000000000000000000000dEaD (MetaMask refuses data on transactions to your own accounts). No value is lost:</p>
 <p class="spec" style="word-break:break-all">${esc(d.reportHash)}</p>
 <p class="why">Then paste the transaction hash here and Tripwire will read it back and check it carries this hash.</p>
 <input id="an-tx" placeholder="transaction hash 0x…" autocomplete="off" spellcheck="false" style="width:100%;box-sizing:border-box;margin:8px 0;padding:10px;font:13px 'IBM Plex Mono',monospace;background:#fff;color:#1a1a1a;border:1px solid #8a8066;border-radius:3px">

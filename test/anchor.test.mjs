@@ -90,6 +90,6 @@ try {
 // page copy: what it proves, testnet label, no stronger claim than the evidence
 const html = readFileSync(new URL("../web/index.html", import.meta.url), "utf8");
 assert.ok(html.includes("Testnet anchor (Base Sepolia)")); assert.ok(html.includes("does not prove the report is right, and it was sent by the tester, not the issuer"));
-assert.ok(html.includes("holds no keys and sends nothing")); assert.ok(!/timestamped on.?chain|immutable|guarantee(s|d)? (the )?(report|accuracy)|legally binding|notariz/i.test(html), "no overclaiming copy");
+assert.ok(html.includes("holds no keys and sends nothing")); assert.ok(html.includes("0x000000000000000000000000000000000000dEaD") && html.includes("MetaMask refuses data on transactions to your own accounts")); assert.ok(!/timestamped on.?chain|immutable|guarantee(s|d)? (the )?(report|accuracy)|legally binding|notariz/i.test(html), "no overclaiming copy");
 console.log("ok page copy: testnet labelled, says what it proves and does not prove");
 console.log("anchor: all checks passed"); process.exit(0);
