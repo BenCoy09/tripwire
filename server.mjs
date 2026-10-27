@@ -60,7 +60,7 @@ const server = createServer(async (req, res) => {
     }
     if (req.method !== "GET" && req.method !== "HEAD") return send(405, { error: "Method not allowed." });
     let p = decodeURIComponent(url.pathname);
-    if (p === "/") p = "/index.html";
+    if (p === "/") p = "/landing.html"; else if (p === "/app") p = "/index.html";
     const file = join(root, normalize(p));
     if (!file.startsWith(root + sep)) return send(403, { error: "Forbidden." });
     return send(200, await readFile(file), TYPES[extname(file)] || "application/octet-stream");
