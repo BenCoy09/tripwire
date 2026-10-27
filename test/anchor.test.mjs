@@ -6,7 +6,7 @@ import { mkdtempSync, writeFileSync, readFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { verifyAnchor, verifyReportAnchor, PROVES } from "../anchor.mjs";
+import { verifyAnchor, verifyReportAnchor, PROVES, PROVES_WRAPPED } from "../anchor.mjs";
 import { hashReport } from "../report-hash.mjs";
 
 const TX = "0x" + "cd".repeat(32), HASH = "0x" + "ab".repeat(32), TESTER = "0x9999999999999999999999999999999999999999";
@@ -39,6 +39,18 @@ await withChain({}, async (rpc) => {
   assert.equal(r.proves, PROVES); assert.match(r.testnetNote, /no permanence guarantee/); console.log("ok anchor verified (network, testnet flag, block, time, explorer link, who sent it)");
 });
 await withChain({ dataField: "data" }, async (rpc) => { assert.ok((await verifyAnchor({ rpc, reportHash: HASH, txHash: TX })).ok); console.log("ok older nodes that call the field 'data' still work"); });
+// wrapped (relayed) transactions: accepted only when the EXACT hash is inside the call, and the claim is weaker
+const wrapData = (h) => "0xcef6d209" + "00".repeat(31) + "60" + "00".repeat(31) + "01" + "aa".repeat(20) + "00".repeat(32) + h.slice(2) + "00".repeat(12);
+await withChain({ data: wrapData(HASH) }, async (rpc) => {
+  const r = await verifyAnchor({ rpc, reportHash: HASH, txHash: TX, expectChainId: 84532 });
+  assert.ok(r.ok, names(r)); assert.equal(r.anchor.mode, "wrapped"); assert.equal(r.proves, PROVES_WRAPPED); assert.match(r.checks.find((c) => /carries/.test(c.name)).detail, /relayed.*not necessarily the tester/);
+  assert.ok(!PROVES_WRAPPED.includes("sent by the tester")); assert.match(PROVES_WRAPPED, /not necessarily the tester/);
+  const d = await verifyAnchor({ rpc: rpc, reportHash: "0x" + "ab".repeat(31) + "ac", txHash: TX }); assert.equal(d.ok, false, "a hash that differs by one nibble must not match inside a wrapper");
+  console.log("ok wrapped transaction: accepted only with the exact hash inside, weaker claim, sender not vouched for");
+});
+await withChain({ data: "0xcef6d209" + "11".repeat(200) }, async (rpc) => { const r = await verifyAnchor({ rpc, reportHash: HASH, txHash: TX }); assert.equal(r.ok, false); console.log("ok wrapped transaction without the hash fails"); });
+await withChain({}, async (rpc) => { const r = await verifyAnchor({ rpc, reportHash: HASH, txHash: TX }); assert.equal(r.anchor.mode, "direct"); assert.equal(r.proves, PROVES); });
+await withChain({ data: wrapData(HASH.toUpperCase().replace("0X", "0x")) }, async (rpc) => assert.ok((await verifyAnchor({ rpc, reportHash: HASH, txHash: TX })).ok));
 // every failure mode must fail, never pass
 const bad = async (cfg, args, re, label) => withChain(cfg, async (rpc) => { const r = await verifyAnchor({ rpc, reportHash: HASH, txHash: TX, ...args }); assert.equal(r.ok, false, label + " must not verify: " + names(r)); assert.match(JSON.stringify(r.checks.filter((c) => !c.pass)), re, label); console.log("ok fails: " + label); });
 await bad({ data: "0x" + "00".repeat(32) }, {}, /not the report hash/, "wrong data");
@@ -71,6 +83,7 @@ await withChain({ data: REP_TX_DATA }, async (rpc) => {
   let r = await sh(["--verify-anchor", join(dir, "r.json"), "--tx", TX, "--rpc", rpc, "--expect-chain", "84532"]); assert.equal(r.code, 0, r.out);
   assert.match(r.out, /ANCHOR VERIFIED/); assert.match(r.out, /sepolia\.basescan\.org\/tx\/0xcdcd/); assert.match(r.out, /not prove the report is right/); assert.match(r.out, /testnet/);
   r = await sh(["--verify-anchor", join(dir, "r.json"), "--tx", "0x" + "11".repeat(32), "--rpc", rpc]); assert.equal(r.code, 1); assert.match(r.out, /ANCHOR NOT VERIFIED/);
+  assert.match((await sh(["--verify-anchor", join(dir, "r.json"), "--tx", TX, "--rpc", rpc])).out, /mode:\s+direct/);
   console.log("ok CLI --verify-anchor: verified and not-verified paths");
 });
 
@@ -90,6 +103,6 @@ try {
 // page copy: what it proves, testnet label, no stronger claim than the evidence
 const html = readFileSync(new URL("../web/index.html", import.meta.url), "utf8");
 assert.ok(html.includes("Testnet anchor (Base Sepolia)")); assert.ok(html.includes("does not prove the report is right, and it was sent by the tester, not the issuer"));
-assert.ok(html.includes("holds no keys and sends nothing")); assert.ok(html.includes("0x000000000000000000000000000000000000dEaD") && html.includes("MetaMask refuses data on transactions to your own accounts")); assert.ok(!/timestamped on.?chain|immutable|guarantee(s|d)? (the )?(report|accuracy)|legally binding|notariz/i.test(html), "no overclaiming copy");
+assert.ok(html.includes("holds no keys and sends nothing")); assert.ok(html.includes("Paid by MetaMask") && html.includes("the sender is not proven")); assert.ok(html.includes("0x000000000000000000000000000000000000dEaD") && html.includes("MetaMask refuses data on transactions to your own accounts")); assert.ok(!/timestamped on.?chain|immutable|guarantee(s|d)? (the )?(report|accuracy)|legally binding|notariz/i.test(html), "no overclaiming copy");
 console.log("ok page copy: testnet labelled, says what it proves and does not prove");
 console.log("anchor: all checks passed"); process.exit(0);

@@ -99,7 +99,7 @@ Tripwire holds no keys and never sends a transaction. To anchor a report you do 
 ```bash
 node probe.mjs --verify-anchor probe-SYMBOL.json --tx 0x<transaction hash> --rpc https://sepolia.base.org
 ```
-It checks the transaction exists, succeeded, and carries exactly this hash, then prints the network, block, block time,
+It checks the transaction exists, succeeded, and carries exactly this hash (as its whole data field, or, if your wallet relayed it through a smart-account call, with the exact hash inside the wrapper call; then it says the sender is not proven), then prints the network, block, block time,
 sender and a block explorer link. The CLI also checks that the report file still hashes to the hash it states, so an edited
 file fails. The page cannot see the file, so it checks the hash only and says so.
 

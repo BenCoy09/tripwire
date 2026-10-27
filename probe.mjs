@@ -18,7 +18,7 @@ if (anchorFile) {
   catch (e) { console.log("Error: " + e.message); process.exit(1); }
   for (const c of res.checks) console.log(`${c.pass ? "PASS" : "FAIL"}  ${c.name}: ${c.detail}`);
   const a = res.anchor;
-  if (a) console.log(`\nnetwork:      ${a.network}${a.testnet ? " (testnet)" : ""}\ntransaction:  ${a.txHash}\nblock:        ${a.blockNumber} (${a.confirmations ?? "?"} confirmations)\nblock time:   ${a.blockTimeIso}\nsent by:      ${a.from}${a.explorerUrl ? "\nexplorer:     " + a.explorerUrl : ""}`);
+  if (a) console.log(`\nnetwork:      ${a.network}${a.testnet ? " (testnet)" : ""}\ntransaction:  ${a.txHash}\nblock:        ${a.blockNumber} (${a.confirmations ?? "?"} confirmations)\nblock time:   ${a.blockTimeIso}\nsent by:      ${a.from}${a.mode === "wrapped" ? " (relayer; not necessarily the tester)" : ""}\nmode:         ${a.mode === "wrapped" ? "WRAPPED (hash is inside a relayed call)" : a.mode === "direct" ? "direct" : "-"}${a.explorerUrl ? "\nexplorer:     " + a.explorerUrl : ""}`);
   console.log(res.ok ? `\nANCHOR VERIFIED. ${res.proves}${res.testnetNote ? "\n" + res.testnetNote : ""}` : "\nANCHOR NOT VERIFIED. See the failed checks above.");
   process.exit(res.ok ? 0 : 1);
 }
