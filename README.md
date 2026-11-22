@@ -8,7 +8,7 @@ checks that the code and the paperwork match. Tripwire reads the terms, tries ev
 should be illegal against the token on a real EVM chain, and files a stamped test report.
 
 ## Try it
-- Web demo: https://tripwire-uw6f.onrender.com (simulated token model)
+- Web demo: https://tripwire-z9ua.onrender.com/ 
 - Real chain run: see "Run it" below. The deployed reference token holds 1 of 4 promises, the patched build 4 of 4.
 
 ## Run it (Linux, macOS, or Windows with WSL)
